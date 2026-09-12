@@ -1,0 +1,76 @@
+﻿@page "/Libro/Edit/{LibroId:int}"
+@inject LibrosServices librosService
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+<PageTitle>Modificar</PageTitle>
+<EditForm Model="Libro" OnValidSubmit="Modificar">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header text-center">
+                <h5 class="card-title">Modificar Libro</h5>
+            </div>
+
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label"><strong>Título</strong></label>
+                    <InputText class="form-control" @bind-Value="Libro.Titulo"></InputText>
+                    <ValidationMessage For="(() => Libro.Titulo)" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><strong>Autor</strong></label>
+                    <InputText class="form-control" @bind-Value="Libro.Autor"></InputText>
+                    <ValidationMessage For="(() => Libro.Autor)" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><strong>Año de Publicación</strong></label>
+                    <InputNumber class="form-control" @bind-Value="Libro.AnoPublicacion"></InputNumber>
+                    <ValidationMessage For="(() => Libro.AnoPublicacion)" />
+                </div>
+            </div>
+
+            <div class="card-footer text-center mt-2">
+                <a href="/Libro/Index" class="btn btn-secondary">
+                    <span class="bi bi-arrow-left"></span> Volver
+                </a>
+                <button type="submit" class="btn btn-primary bi bi-floppy"> Modificar</button>
+                <button type="button" class="btn btn-danger bi bi-trash" @onclick="Eliminar"> Eliminar</button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int LibroId { get; set; }
+
+    public Libros Libro { get; set; } = new Libros();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Libro = await librosService.Buscar(LibroId) ?? new Libros();
+    }
+
+    public async Task Modificar()
+    {
+        var modificado = await librosService.Guardar(Libro);
+        if (modificado)
+        {
+            navigationManager.NavigateTo("/Libro/Index");
+        }
+    }
+
+    private async Task Eliminar()
+    {
+        var eliminado = await librosService.Eliminar(Libro.LibroId);
+        if (eliminado)
+        {
+            navigationManager.NavigateTo("/Libro/Index");
+        }
+    }
+}
