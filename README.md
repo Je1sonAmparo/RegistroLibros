@@ -24,7 +24,7 @@ La tabla principal del sistema está nombrada como `Libros` y contiene los sigui
 - No se permite el registro de dos libros con el mismo título exacto.
 - Si el usuario intenta guardar un duplicado, el sistema bloquea la acción y muestra un mensaje de error en pantalla.
 
-## Cómo ejecutar el proyecto localmente
+## Cómo ejecutar el proyecto
 
 1. Clona el repositorio:
 
