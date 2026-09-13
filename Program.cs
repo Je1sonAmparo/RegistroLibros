@@ -16,6 +16,8 @@ builder.Services.AddDbContextFactory<Contexto>(options =>
 
 builder.Services.AddScoped<LibrosServices>();
 
+builder.Services.AddBlazorBootstrap();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
