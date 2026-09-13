@@ -3,7 +3,8 @@
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
 
-<PageTitle>Modificar</PageTitle>
+<PageTitle>Modificar Libro</PageTitle>
+
 <EditForm Model="Libro" OnValidSubmit="Modificar">
     <DataAnnotationsValidator />
     <ValidationSummary />
@@ -39,7 +40,6 @@
                     <span class="bi bi-arrow-left"></span> Volver
                 </a>
                 <button type="submit" class="btn btn-primary bi bi-floppy"> Modificar</button>
-                <button type="button" class="btn btn-danger bi bi-trash" @onclick="Eliminar"> Eliminar</button>
             </div>
         </div>
     </div>
@@ -60,15 +60,6 @@
     {
         var modificado = await librosService.Guardar(Libro);
         if (modificado)
-        {
-            navigationManager.NavigateTo("/Libro/Index");
-        }
-    }
-
-    private async Task Eliminar()
-    {
-        var eliminado = await librosService.Eliminar(Libro.LibroId);
-        if (eliminado)
         {
             navigationManager.NavigateTo("/Libro/Index");
         }
