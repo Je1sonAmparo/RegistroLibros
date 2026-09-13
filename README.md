@@ -24,12 +24,6 @@ La tabla principal del sistema está nombrada como `Libros` y contiene los sigui
 - No se permite el registro de dos libros con el mismo título exacto.
 - Si el usuario intenta guardar un duplicado, el sistema bloquea la acción y muestra un mensaje de error en pantalla.
 
-## Entregables
-
-- **Capturas de pantalla (10%):** Imágenes que demuestran la funcionalidad del registro y la vista principal de los datos.
-- **Repositorio en GitHub (50%):** Enlace público con el código fuente del proyecto.
-- **Aplicación en Somee (40%):** Sistema publicado y funcionando en la plataforma Somee para su evaluación en línea.
-
 ## Cómo ejecutar el proyecto localmente
 
 1. Clona el repositorio:
