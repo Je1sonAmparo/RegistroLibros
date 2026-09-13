@@ -1,7 +1,6 @@
 ﻿@page "/Libro/Edit/{LibroId:int}"
 @inject LibrosServices librosService
 @inject NavigationManager navigationManager
-@rendermode InteractiveServer
 
 <PageTitle>Modificar Libro</PageTitle>
 
@@ -61,7 +60,12 @@
         var modificado = await librosService.Guardar(Libro);
         if (modificado)
         {
+            toastService.ShowSuccess( "Se ha modificado correctamente");
             navigationManager.NavigateTo("/Libro/Index");
+        }
+        else
+        {
+            toastService.ShowError("No se ha podido modificar correctamente.");
         }
     }
 }
