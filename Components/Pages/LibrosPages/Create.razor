@@ -45,6 +45,8 @@
 
     public async Task Guardar()
     {
+        Libro.Titulo = Libro.Titulo.Trim();
+
         var tituloExiste = await librosService.GetList(l => l.Titulo!.ToLower() == Libro.Titulo!.ToLower());
         
         if (tituloExiste.Any())
