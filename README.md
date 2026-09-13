@@ -7,7 +7,7 @@
 
 ## Descripción
 
-Proyecto web desarrollado en Blazor con .NET 8 para gestionar el registro de un catálogo de libros. La aplicación utiliza una base de datos SQLite gestionada a través de Entity Framework Core y cuenta con un diseño de interfaz basado en Bootstrap.
+Proyecto web desarrollado en Blazor con .NET 10 para gestionar el registro de un catálogo de libros. La aplicación utiliza una base de datos SQLite gestionada a través de Entity Framework Core y cuenta con un diseño de interfaz basado en Bootstrap.
 
 ## Requerimientos de la Base de Datos
 
