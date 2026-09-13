@@ -12,6 +12,7 @@
                 <h5 class="card-title">Crear Libro</h5>
             </div>
 
+            @* Título *@
             <div class="card-body">
                 <div class="mb-3">
                     <label class="form-label"><strong>Título</strong></label>
@@ -19,12 +20,14 @@
                     <ValidationMessage For="(() => Libro.Titulo)" />
                 </div>
 
+                @* Autor *@
                 <div class="mb-3">
                     <label class="form-label"><strong>Autor</strong></label>
                     <InputText class="form-control" @bind-Value="Libro.Autor"></InputText>
                     <ValidationMessage For="(() => Libro.Autor)" />
                 </div>
 
+                @* Año de Publicación *@
                 <div class="mb-3">
                     <label class="form-label"><strong>Año de Publicación</strong></label>
                     <InputNumber class="form-control" @bind-Value="Libro.AnoPublicacion"></InputNumber>
@@ -32,6 +35,7 @@
                 </div>
             </div>
 
+            @* Botones de Acción *@
             <div class="card-footer text-center mt-2">
                 <a href="/Libro/Index" class="btn btn-secondary"> <span class="bi bi-arrow-left"></span> Volver</a>
                 <button type="submit" class="btn btn-primary bi bi-floppy"> Guardar</button>
