@@ -45,8 +45,15 @@
 
     public async Task Guardar()
     {
-        var creado = await librosService.Guardar(Libro);
+        var tituloExiste = await librosService.GetList(l => l.Titulo!.ToLower() == Libro.Titulo!.ToLower());
         
+        if (tituloExiste.Any())
+        {
+            toastService.ShowError("Ya existe un libro registrado con este título.");
+            return; 
+        }
+
+        var creado = await librosService.Guardar(Libro);
         if (creado)
         {
             toastService.ShowSuccess("Libro guardado correctamente.");
