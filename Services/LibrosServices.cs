@@ -1,12 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
+﻿using Aplicada1.Core;
+using Microsoft.EntityFrameworkCore;
 using RegistroLibros.Context;
 using RegistroLibros.Models;
 using System.Linq.Expressions;
 
 namespace RegistroLibros.Services
 {
-    public class LibrosServices(IDbContextFactory<Contexto> DbFactory)
+    public class LibrosServices(IDbContextFactory<Contexto> 
+        DbFactory):IService<Libros, int>
     {
         private async Task<bool> Existe(int libroId)
         {
