@@ -44,7 +44,12 @@
 
         if (eliminado)
         {
+            toastService.ShowSuccess("Se ha eliminado correctamente.");
             navigationManager.NavigateTo("/Libro/Index");
+        }
+        else
+        {
+            toastService.ShowError("No se ha podido eliminar correctamente.");
         }
     }
 }
