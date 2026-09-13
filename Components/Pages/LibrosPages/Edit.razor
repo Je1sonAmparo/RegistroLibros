@@ -58,10 +58,21 @@
 
     public async Task Modificar()
     {
+        Libro.Titulo = Libro.Titulo?.Trim();
+
+        var tituloExiste = await librosService.GetList(l => l.Titulo!.ToLower() == Libro.Titulo!.ToLower() && l.LibroId != Libro.LibroId);
+
+        if (tituloExiste.Any())
+        {
+            toastService.ShowError("Ya existe otro libro registrado con este título.");
+            return;
+        }
+
         var modificado = await librosService.Guardar(Libro);
+
         if (modificado)
         {
-            toastService.ShowSuccess("Se ha modificado correctamente");
+            toastService.ShowSuccess("Se ha modificado correctamente.");
             navigationManager.NavigateTo("/Libro/Index");
         }
         else
