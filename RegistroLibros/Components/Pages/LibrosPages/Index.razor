@@ -10,7 +10,8 @@
             <h5 class="card-title">Registro de Libros</h5>
             <a href="/Libro/Create" class="btn btn-primary"> <span class="bi bi-plus-square mt-3"></span> Crear</a>
         </div>
-
+        
+        @* Filtro *@
         <div class="card-body">
             <div class="row">
                 <div class="col-3">
@@ -21,6 +22,7 @@
                 </div>
             </div>
 
+            @* Controles de Busqueda *@
             <div class="row align-items-center">
                 <div class="col-3">
                     <InputSelect class="form-select" @bind-Value="Filtro">
@@ -37,6 +39,7 @@
                 </div>
             </div>
 
+            @* Tabla *@
             <table class="table table-hover mt-3">
                 <thead class="table table-striped text-black">
                     <tr>
@@ -55,6 +58,8 @@
                             <td> @libro.Titulo</td>
                             <td> @libro.Autor</td>
                             <td> @libro.AnoPublicacion</td>
+
+                            @* Botones de Acción *@
                             <td class="text-center">
                                 <a href="/Libro/Edit/@libro.LibroId" class="btn btn-outline-primary bi bi-pencil-square"></a>
                                 <a href="/Libro/Delete/@libro.LibroId" class="btn btn-outline-danger bi bi-trash ms-2"></a>
