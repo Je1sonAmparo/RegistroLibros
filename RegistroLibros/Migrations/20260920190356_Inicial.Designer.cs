@@ -11,8 +11,8 @@ using RegistroLibros.Context;
 namespace RegistroLibros.Migrations
 {
     [DbContext(typeof(Contexto))]
-    [Migration("20260915010255_Iniciall")]
-    partial class Iniciall
+    [Migration("20260920190356_Inicial")]
+    partial class Inicial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
