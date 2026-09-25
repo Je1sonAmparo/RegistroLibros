@@ -1,16 +1,16 @@
-﻿@page "/Libro/Index"
-@page "/"
-@inject LibrosServices librosService
+﻿@page "/Estudiante/Index"
+@inject EstudiantesServices estudianteService
 
-<PageTitle>Registro de Libros</PageTitle>
+<PageTitle>Registro de Estudiantes</PageTitle>
 
 <div class="container">
+
     <div class="card shadow-lg">
         <div class="card-header d-flex justify-content-between align-center mb-4">
-            <h5 class="card-title">Registro de Libros</h5>
-            <a href="/Libro/Create" class="btn btn-primary"> <span class="bi bi-plus-square mt-3"></span> Crear</a>
+            <h5 class="card-title">Registro de Estudiantes</h5>
+            <a href="/Estudiante/Create" class="btn btn-primary"> <span class="bi bi-plus-square mt-3"></span> Crear</a>
         </div>
-        
+
         @* Filtro *@
         <div class="card-body">
             <div class="row">
@@ -27,8 +27,7 @@
                 <div class="col-3">
                     <InputSelect class="form-select" @bind-Value="Filtro">
                         <option value="" selected disabled>Elija una opci&oacute;n</option>
-                        <option value="Titulo">Título</option>
-                        <option value="Autor">Autor</option>
+                        <option value="Nombres">Nombres</option>
                     </InputSelect>
                 </div>
                 <div class="col-4">
@@ -43,62 +42,62 @@
             <table class="table table-hover mt-3">
                 <thead class="table table-striped text-black">
                     <tr>
-                        <th>LibroId</th>
-                        <th>Título</th>
-                        <th>Autor</th>
-                        <th>Año de Publicación</th>
+                        <th>EstudianteId</th>
+                        <th>Nombres</th>
+                        <th>Dirección</th>
+                        <th>Email</th>
+                        <th>Fecha de Nacimiento</th>
                         <th>Opciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var libro in ListaLibros)
+                    @foreach (var estudiante in ListaEstudiantes)
                     {
                         <tr>
-                            <td> @libro.LibroId</td>
-                            <td> @libro.Titulo</td>
-                            <td> @libro.Autor</td>
-                            <td> @libro.AnoPublicacion</td>
-
-                            @* Botones de Acción *@
+                            @* Datos del Estudiante *@
+                            <td> @estudiante.EstudianteId</td>
+                            <td> @estudiante.Nombres</td>
+                            <td> @estudiante.Direccion</td>
+                            <td> @estudiante.Email</td>
+                            <td> @estudiante.FechaNacimiento?.ToString("dd/MM/yyyy")</td>
+                            
+                            @* Botones *@
                             <td class="text-center">
-                                <a href="/Libro/Edit/@libro.LibroId" class="btn btn-outline-primary bi bi-pencil-square"></a>
-                                <a href="/Libro/Delete/@libro.LibroId" class="btn btn-outline-danger bi bi-trash ms-2"></a>
+                                <a href="/Estudiante/Edit/@estudiante.EstudianteId" class="btn btn-outline-primary bi bi-pencil-square"></a>
+                                <a href="/Estudiante/Delete/@estudiante.EstudianteId" class="btn btn-outline-danger bi bi-trash ms-2"></a>
                             </td>
                         </tr>
                     }
                 </tbody>
             </table>
         </div>
+        
         <div class="card-footer d-flex justify-content-between align-center mb-4">
-            <label>Cantidad:  @ListaLibros.Count()</label>
+            <label>Cantidad:  @ListaEstudiantes.Count()</label>
         </div>
     </div>
 </div>
 
 @code {
-    public List<Libros> ListaLibros { get; set; } = new List<Libros>();
+    public List<Estudiantes> ListaEstudiantes { get; set; } = new List<Estudiantes>();
     public string Filtro { get; set; } = string.Empty;
     public string ValorFiltro { get; set; } = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
-        ListaLibros = await librosService.GetList(p => p.LibroId > 0);
+        ListaEstudiantes = await estudianteService.GetList(p => p.EstudianteId > 0);
     }
 
     private async Task Buscar()
     {
         if (ValorFiltro.Trim() != "")
         {
-            if (Filtro == "Titulo")
+            if (Filtro == "Nombres")
             {
-                ListaLibros = await librosService.GetList(p => p.Titulo!.ToLower().Contains(ValorFiltro.ToLower()));
-            }
-            else if (Filtro == "Autor")
-            {
-                ListaLibros = await librosService.GetList(p => p.Autor!.ToLower().Contains(ValorFiltro.ToLower()));
+                ListaEstudiantes = await estudianteService.GetList(p => p.Nombres!.ToLower().Contains(ValorFiltro.ToLower()));
             }
         }
         else
-            ListaLibros = await librosService.GetList(p => p.LibroId > 0);
+            ListaEstudiantes = await estudianteService.GetList(p => p.EstudianteId > 0);
     }
 }

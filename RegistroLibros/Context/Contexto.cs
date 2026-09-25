@@ -10,5 +10,7 @@ public class Contexto : DbContext
     }
 
     public DbSet<Libros> Libros { get; set; }
+
+    public DbSet<Estudiantes> Estudiantes { get; set; }
 }
 
