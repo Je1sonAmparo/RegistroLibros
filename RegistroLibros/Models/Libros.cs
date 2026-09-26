@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace RegistroLibros.Models
 {
@@ -15,5 +15,8 @@ namespace RegistroLibros.Models
 
         [Required(ErrorMessage = "Debe ingresar un año de publicacion")]
         public int? AnoPublicacion { get; set; }
+
+        [InverseProperty("Libro")]
+        public virtual ICollection<Prestamos> Prestamos { get; set; } = new List<Prestamos>();
     }
 }
