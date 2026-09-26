@@ -67,10 +67,21 @@
             <div class="card-footer text-center mt-2">
                 <a href="/Prestamo/Index" class="btn btn-secondary"> <span class="bi bi-arrow-left"></span> Volver</a>
                 <button type="submit" class="btn btn-primary bi bi-floppy"> Modificar</button>
+                <button type="button" class="btn btn-danger bi bi-trash ms-2" @onclick="OnShowModalClick"> Eliminar</button>
             </div>
         </div>
     </div>
 </EditForm>
+
+<Modal @ref="modal" Title="Eliminar Préstamo">
+    <BodyTemplate>
+        ¿Estás seguro de que quieres eliminar este préstamo?
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="OnHideModalClick">Cancelar</Button>
+        <Button Color="ButtonColor.Danger" @onclick="Eliminar">Sí, eliminar</Button>
+    </FooterTemplate>
+</Modal>
 
 @code {
     [Parameter]
@@ -109,5 +120,32 @@
         {
             toastService.ShowError("No se pudo modificar el préstamo.");
         }
+    }
+
+    private Modal modal = default!;
+
+    private async Task OnShowModalClick()
+    {
+        await modal.ShowAsync();
+    }
+
+    private async Task OnHideModalClick()
+    {
+        await modal.HideAsync();
+    }
+
+    private async Task Eliminar()
+    {
+        var eliminado = await prestamosService.Eliminar(PrestamoId);
+        if (eliminado)
+        {
+            toastService.ShowSuccess("Préstamo eliminado correctamente.");
+            navigationManager.NavigateTo("/Prestamo/Index");
+        }
+        else
+        {
+            toastService.ShowError("No se pudo eliminar el préstamo.");
+        }
+        await modal.HideAsync();
     }
 }

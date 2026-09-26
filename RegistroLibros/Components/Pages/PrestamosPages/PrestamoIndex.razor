@@ -1,6 +1,5 @@
 @page "/Prestamo/Index"
 @page "/"
-@page "/Prestamos"
 @inject PrestamosService prestamosService
 
 <PageTitle>Registro de Préstamos</PageTitle>
@@ -67,7 +66,7 @@
                             @* Botones de Acción *@
                             <td class="text-center">
                                 <a href="/Prestamo/Edit/@prestamo.PrestamoId" class="btn btn-outline-primary bi bi-pencil-square"></a>
-                                <a href="/Prestamo/Delete/@prestamo.PrestamoId" class="btn btn-outline-danger bi bi-trash ms-2"></a>
+                                <button type="button" class="btn btn-outline-danger bi bi-trash ms-2" @onclick="() => OnShowModalClick(prestamo.PrestamoId)"></button>
                             </td>
                         </tr>
                     }
@@ -79,6 +78,16 @@
         </div>
     </div>
 </div>
+
+<Modal @ref="modal" Title="Eliminar Préstamo">
+    <BodyTemplate>
+        ¿Estás seguro de que quieres eliminar este préstamo?
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="OnHideModalClick">Cancelar</Button>
+        <Button Color="ButtonColor.Danger" @onclick="Eliminar">Sí, eliminar</Button>
+    </FooterTemplate>
+</Modal>
 
 @code {
     public List<Prestamos> ListaPrestamos { get; set; } = new List<Prestamos>();
@@ -105,5 +114,34 @@
         }
         else
             ListaPrestamos = await prestamosService.GetList(p => p.PrestamoId > 0);
+    }
+
+    private Modal modal = default!;
+    private int prestamoIdAEliminar;
+
+    private async Task OnShowModalClick(int id)
+    {
+        prestamoIdAEliminar = id;
+        await modal.ShowAsync();
+    }
+
+    private async Task OnHideModalClick()
+    {
+        await modal.HideAsync();
+    }
+
+    private async Task Eliminar()
+    {
+        var eliminado = await prestamosService.Eliminar(prestamoIdAEliminar);
+        if (eliminado)
+        {
+            toastService.ShowSuccess("Préstamo eliminado correctamente.");
+            await Buscar(); // Recargar la tabla
+        }
+        else
+        {
+            toastService.ShowError("No se pudo eliminar el préstamo.");
+        }
+        await modal.HideAsync();
     }
 }
