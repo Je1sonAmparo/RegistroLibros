@@ -41,7 +41,7 @@
 
             @* Tabla *@
             <QuickGrid Items="ListaPrestamos.AsQueryable()" Class="table table-hover mt-3">
-                <PropertyColumn Property="@(p => p.PrestamoId)" Title="ID" Sortable="true" />
+                <PropertyColumn Property="@(p => p.PrestamoId)" Title="PrestamoId" Sortable="true" />
                 <PropertyColumn Property="@(p => p.Estudiante!.Nombres)" Title="Estudiante" Sortable="true" />
                 <PropertyColumn Property="@(p => p.Libro!.Titulo)" Title="Libro" Sortable="true" />
                 <PropertyColumn Property="@(p => p.FechaPrestamo)" Title="Fecha Préstamo" Format="dd/MM/yyyy" Sortable="true" />
