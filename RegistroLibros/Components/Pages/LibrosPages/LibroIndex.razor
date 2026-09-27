@@ -39,18 +39,20 @@
             </div>
 
             @* Tabla *@
-            <QuickGrid Items="ListaLibros.AsQueryable()" Class="table table-hover mt-3">
-                <PropertyColumn Property="@(l => l.LibroId)" Title="LibroId" Sortable="true" />
-                <PropertyColumn Property="@(l => l.Titulo)" Title="Título" Sortable="true" />
-                <PropertyColumn Property="@(l => l.Autor)" Title="Autor" Sortable="true" />
-                <PropertyColumn Property="@(l => l.AnoPublicacion)" Title="Año de Publicación" Sortable="true" />
-                <TemplateColumn Title="Opciones" Align="Align.Center">
-                    <div class="d-flex text-nowrap">
-                        <a href="/Libro/Edit/@context.LibroId" class="btn btn-outline-primary bi bi-pencil-square"></a>
-                        <button type="button" class="btn btn-outline-danger bi bi-trash ms-2" @onclick="() => OnShowModalClick(context.LibroId)"></button>
-                    </div>
-                </TemplateColumn>
-            </QuickGrid>
+            <div class="grid">
+                <QuickGrid Items="ListaLibros.AsQueryable()" Class="table table-hover mt-3">
+                    <PropertyColumn Property="@(l => l.LibroId)" Title="LibroId" Sortable="true" />
+                    <PropertyColumn Property="@(l => l.Titulo)" Title="Título" Sortable="true" />
+                    <PropertyColumn Property="@(l => l.Autor)" Title="Autor" Sortable="true" />
+                    <PropertyColumn Property="@(l => l.AnoPublicacion)" Title="Año de Publicación" Sortable="true" />
+                    <TemplateColumn Title="Opciones" Align="Align.Center">
+                        <div class="d-flex text-nowrap">
+                            <a href="/Libro/Edit/@context.LibroId" class="btn btn-outline-primary bi bi-pencil-square"></a>
+                            <button type="button" class="btn btn-outline-danger bi bi-trash ms-2" @onclick="() => OnShowModalClick(context.LibroId)"></button>
+                        </div>
+                    </TemplateColumn>
+                </QuickGrid>
+            </div>
         </div>
         <div class="card-footer d-flex justify-content-between align-center mb-4">
             <label>Cantidad:  @ListaLibros.Count()</label>
