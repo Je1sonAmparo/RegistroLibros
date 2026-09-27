@@ -73,67 +73,6 @@ namespace RegistroLibros.Migrations
 
                     b.ToTable("Libros");
                 });
-
-            modelBuilder.Entity("RegistroLibros.Models.Prestamos", b =>
-                {
-                    b.Property<int>("PrestamoId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PrestamoId"));
-
-                    b.Property<bool>("Devuelto")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("EstudianteId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("FechaDevolucion")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("FechaPrestamo")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("LibroId")
-                        .HasColumnType("int");
-
-                    b.HasKey("PrestamoId");
-
-                    b.HasIndex("EstudianteId");
-
-                    b.HasIndex("LibroId");
-
-                    b.ToTable("Prestamos");
-                });
-
-            modelBuilder.Entity("RegistroLibros.Models.Prestamos", b =>
-                {
-                    b.HasOne("RegistroLibros.Models.Estudiantes", "Estudiante")
-                        .WithMany("Prestamos")
-                        .HasForeignKey("EstudianteId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("RegistroLibros.Models.Libros", "Libro")
-                        .WithMany("Prestamos")
-                        .HasForeignKey("LibroId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Estudiante");
-
-                    b.Navigation("Libro");
-                });
-
-            modelBuilder.Entity("RegistroLibros.Models.Estudiantes", b =>
-                {
-                    b.Navigation("Prestamos");
-                });
-
-            modelBuilder.Entity("RegistroLibros.Models.Libros", b =>
-                {
-                    b.Navigation("Prestamos");
-                });
 #pragma warning restore 612, 618
         }
     }
