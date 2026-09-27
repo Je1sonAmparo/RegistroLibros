@@ -7,7 +7,7 @@
 
 ## Descripción
 
-Proyecto web desarrollado en Blazor con .NET 10 para gestionar el registro de un catálogo de libros. La aplicación utiliza una base de datos SQlServer gestionada a través de Entity Framework Core y cuenta con un diseño de interfaz basado en Bootstrap.
+Proyecto web desarrollado en Blazor con .NET 10 para gestionar el registro de un catálogo de libros, estudiantes y préstamos. La aplicación utiliza una base de datos SQlServer gestionada a través de Entity Framework Core y cuenta con un diseño de interfaz basado en Bootstrap.
 
 ## Requerimientos de la Base de Datos
 
@@ -26,12 +26,24 @@ Adicionalmente, se cuenta con una tabla nombrada como `Estudiantes` con los sigu
 - Email
 - FechaNacimiento
 
+También se cuenta con una tabla nombrada como `Prestamos` con los siguientes atributos:
+
+- PrestamoId
+- EstudianteId
+- LibroId
+- FechaPrestamo
+- FechaDevolucion
+- Devuelto
+
 ## Validaciones Implementadas
 
 - Todos los campos de los formularios son estrictamente obligatorios.
 - No se permite el registro de dos libros con el mismo título exacto.
 - No se permite el registro de dos estudiantes con el mismo nombre.
 - Si el usuario intenta guardar un duplicado, el sistema bloquea la acción y muestra un mensaje de error en pantalla.
+- Un estudiante no puede tener más de un préstamo activo a la vez.
+- Un libro no puede prestarse si ya está prestado a otra persona.
+- La fecha de devolución no puede ser menor a la fecha de préstamo.
 
 ## Cómo ejecutar el proyecto
 
