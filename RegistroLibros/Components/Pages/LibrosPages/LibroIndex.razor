@@ -61,7 +61,7 @@
                             @* Botones de Acción *@
                             <td class="text-center">
                                 <a href="/Libro/Edit/@libro.LibroId" class="btn btn-outline-primary bi bi-pencil-square"></a>
-                                <a href="/Libro/Delete/@libro.LibroId" class="btn btn-outline-danger bi bi-trash ms-2"></a>
+                                <button type="button" class="btn btn-outline-danger bi bi-trash ms-2" @onclick="() => OnShowModalClick(libro.LibroId)"></button>
                             </td>
                         </tr>
                     }
@@ -73,6 +73,16 @@
         </div>
     </div>
 </div>
+
+<Modal @ref="modal" Title="Eliminar Libro">
+    <BodyTemplate>
+        ¿Estás seguro de que quieres eliminar este libro?
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="OnHideModalClick">Cancelar</Button>
+        <Button Color="ButtonColor.Danger" @onclick="Eliminar">Sí, eliminar</Button>
+    </FooterTemplate>
+</Modal>
 
 @code {
     public List<Libros> ListaLibros { get; set; } = new List<Libros>();
@@ -99,5 +109,34 @@
         }
         else
             ListaLibros = await librosService.GetList(p => p.LibroId > 0);
+    }
+
+    private Modal modal = default!;
+    private int libroIdAEliminar;
+
+    private async Task OnShowModalClick(int id)
+    {
+        libroIdAEliminar = id;
+        await modal.ShowAsync();
+    }
+
+    private async Task OnHideModalClick()
+    {
+        await modal.HideAsync();
+    }
+
+    private async Task Eliminar()
+    {
+        var eliminado = await librosService.Eliminar(libroIdAEliminar);
+        if (eliminado)
+        {
+            toastService.ShowSuccess("Libro eliminado correctamente.");
+            await Buscar(); // Recargar la tabla
+        }
+        else
+        {
+            toastService.ShowError("No se pudo eliminar el libro.");
+        }
+        await modal.HideAsync();
     }
 }

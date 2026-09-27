@@ -1,4 +1,4 @@
-﻿@page "/Estudiante/Index"
+@page "/Estudiante/Index"
 @inject EstudiantesServices estudianteService
 
 <PageTitle>Registro de Estudiantes</PageTitle>
@@ -64,7 +64,7 @@
                             @* Botones *@
                             <td class="text-center">
                                 <a href="/Estudiante/Edit/@estudiante.EstudianteId" class="btn btn-outline-primary bi bi-pencil-square"></a>
-                                <a href="/Estudiante/Delete/@estudiante.EstudianteId" class="btn btn-outline-danger bi bi-trash ms-2"></a>
+                                <button type="button" class="btn btn-outline-danger bi bi-trash ms-2" @onclick="() => OnShowModalClick(estudiante.EstudianteId)"></button>
                             </td>
                         </tr>
                     }
@@ -77,6 +77,16 @@
         </div>
     </div>
 </div>
+
+<Modal @ref="modal" Title="Eliminar Estudiante">
+    <BodyTemplate>
+        ¿Estás seguro de que quieres eliminar este estudiante?
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="OnHideModalClick">Cancelar</Button>
+        <Button Color="ButtonColor.Danger" @onclick="Eliminar">Sí, eliminar</Button>
+    </FooterTemplate>
+</Modal>
 
 @code {
     public List<Estudiantes> ListaEstudiantes { get; set; } = new List<Estudiantes>();
@@ -99,5 +109,34 @@
         }
         else
             ListaEstudiantes = await estudianteService.GetList(p => p.EstudianteId > 0);
+    }
+
+    private Modal modal = default!;
+    private int estudianteIdAEliminar;
+
+    private async Task OnShowModalClick(int id)
+    {
+        estudianteIdAEliminar = id;
+        await modal.ShowAsync();
+    }
+
+    private async Task OnHideModalClick()
+    {
+        await modal.HideAsync();
+    }
+
+    private async Task Eliminar()
+    {
+        var eliminado = await estudianteService.Eliminar(estudianteIdAEliminar);
+        if (eliminado)
+        {
+            toastService.ShowSuccess("Estudiante eliminado correctamente.");
+            await Buscar(); // Recargar la tabla
+        }
+        else
+        {
+            toastService.ShowError("No se pudo eliminar el estudiante.");
+        }
+        await modal.HideAsync();
     }
 }
