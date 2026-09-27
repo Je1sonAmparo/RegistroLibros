@@ -105,6 +105,20 @@
             return;
         }
 
+        var estudiantePrestamos = await prestamosService.GetList(p => p.EstudianteId == Prestamo.EstudianteId && !p.Devuelto && p.PrestamoId != Prestamo.PrestamoId);
+        if (estudiantePrestamos.Any())
+        {
+            toastService.ShowError("Este estudiante ya tiene otro préstamo activo.");
+            return;
+        }
+
+        var libroPrestamos = await prestamosService.GetList(p => p.LibroId == Prestamo.LibroId && !p.Devuelto && p.PrestamoId != Prestamo.PrestamoId);
+        if (libroPrestamos.Any())
+        {
+            toastService.ShowError("Este libro ya está prestado a otra persona.");
+            return;
+        }
+
         var modificado = await prestamosService.Guardar(Prestamo);
         if (modificado)
         {
