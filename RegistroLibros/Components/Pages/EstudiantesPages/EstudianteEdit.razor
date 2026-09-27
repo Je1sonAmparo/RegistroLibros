@@ -1,4 +1,4 @@
-﻿@page "/Estudiante/Edit/{EstudianteId:int}"
+@page "/Estudiante/Edit/{EstudianteId:int}"
 @inject EstudiantesServices estudianteService
 @inject NavigationManager navigationManager
 
@@ -50,11 +50,21 @@
                     <span class="bi bi-arrow-left"></span> Volver
                 </a>
                 <button type="submit" class="btn btn-primary bi bi-floppy"> Modificar</button>
-                <a href="/Estudiante/Delete/@Estudiante.EstudianteId" class="btn btn-danger bi bi-trash"> Eliminar</a>
+                <button type="button" class="btn btn-danger bi bi-trash ms-2" @onclick="OnShowModalClick"> Eliminar</button>
             </div>
         </div>
     </div>
 </EditForm>
+
+<Modal @ref="modal" Title="Eliminar Estudiante">
+    <BodyTemplate>
+        ¿Estás seguro de que quieres eliminar este estudiante?
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="OnHideModalClick">Cancelar</Button>
+        <Button Color="ButtonColor.Danger" @onclick="Eliminar">Sí, eliminar</Button>
+    </FooterTemplate>
+</Modal>
 
 @code {
     [Parameter]
@@ -90,5 +100,32 @@
         {
             toastService.ShowError("No se ha podido modificar correctamente.");
         }
+    }
+
+    private Modal modal = default!;
+
+    private async Task OnShowModalClick()
+    {
+        await modal.ShowAsync();
+    }
+
+    private async Task OnHideModalClick()
+    {
+        await modal.HideAsync();
+    }
+
+    private async Task Eliminar()
+    {
+        var eliminado = await estudianteService.Eliminar(EstudianteId);
+        if (eliminado)
+        {
+            toastService.ShowSuccess("Estudiante eliminado correctamente.");
+            navigationManager.NavigateTo("/Estudiante/Index");
+        }
+        else
+        {
+            toastService.ShowError("No se pudo eliminar el estudiante.");
+        }
+        await modal.HideAsync();
     }
 }
