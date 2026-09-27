@@ -40,38 +40,22 @@
             </div>
 
             @* Tabla *@
-            <table class="table table-hover mt-3">
-                <thead class="table table-striped text-black">
-                    <tr>
-                        <th>ID</th>
-                        <th>Estudiante</th>
-                        <th>Libro</th>
-                        <th>Fecha Préstamo</th>
-                        <th>Fecha Devolución</th>
-                        <th>Devuelto</th>
-                        <th>Opciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var prestamo in ListaPrestamos)
-                    {
-                        <tr>
-                            <td>@prestamo.PrestamoId</td>
-                            <td>@(prestamo.Estudiante?.Nombres)</td>
-                            <td>@(prestamo.Libro?.Titulo)</td>
-                            <td>@prestamo.FechaPrestamo.ToShortDateString()</td>
-                            <td>@prestamo.FechaDevolucion.ToShortDateString()</td>
-                            <td>@(prestamo.Devuelto ? "Sí" : "No")</td>
-
-                            @* Botones de Acción *@
-                            <td class="text-center">
-                                <a href="/Prestamo/Edit/@prestamo.PrestamoId" class="btn btn-outline-primary bi bi-pencil-square"></a>
-                                <button type="button" class="btn btn-outline-danger bi bi-trash ms-2" @onclick="() => OnShowModalClick(prestamo.PrestamoId)"></button>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+            <QuickGrid Items="ListaPrestamos.AsQueryable()" Class="table table-hover mt-3">
+                <PropertyColumn Property="@(p => p.PrestamoId)" Title="ID" Sortable="true" />
+                <PropertyColumn Property="@(p => p.Estudiante!.Nombres)" Title="Estudiante" Sortable="true" />
+                <PropertyColumn Property="@(p => p.Libro!.Titulo)" Title="Libro" Sortable="true" />
+                <PropertyColumn Property="@(p => p.FechaPrestamo)" Title="Fecha Préstamo" Format="dd/MM/yyyy" Sortable="true" />
+                <PropertyColumn Property="@(p => p.FechaDevolucion)" Title="Fecha Devolución" Format="dd/MM/yyyy" Sortable="true" />
+                <TemplateColumn Title="Devuelto" Sortable="true">
+                    @(context.Devuelto ? "Sí" : "No")
+                </TemplateColumn>
+                <TemplateColumn Title="Opciones" Align="Align.Center">
+                    <div class="d-flex text-nowrap">
+                        <a href="/Prestamo/Edit/@context.PrestamoId" class="btn btn-outline-primary bi bi-pencil-square"></a>
+                        <button type="button" class="btn btn-outline-danger bi bi-trash ms-2" @onclick="() => OnShowModalClick(context.PrestamoId)"></button>
+                    </div>
+                </TemplateColumn>
+            </QuickGrid>
         </div>
         <div class="card-footer d-flex justify-content-between align-center mb-4">
             <label>Cantidad:  @ListaPrestamos.Count()</label>

@@ -39,37 +39,19 @@
             </div>
 
             @* Tabla *@
-            <table class="table table-hover mt-3">
-                <thead class="table table-striped text-black">
-                    <tr>
-                        <th>EstudianteId</th>
-                        <th>Nombres</th>
-                        <th>Dirección</th>
-                        <th>Email</th>
-                        <th>Fecha de Nacimiento</th>
-                        <th>Opciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var estudiante in ListaEstudiantes)
-                    {
-                        <tr>
-                            @* Datos del Estudiante *@
-                            <td> @estudiante.EstudianteId</td>
-                            <td> @estudiante.Nombres</td>
-                            <td> @estudiante.Direccion</td>
-                            <td> @estudiante.Email</td>
-                            <td> @estudiante.FechaNacimiento?.ToString("dd/MM/yyyy")</td>
-                            
-                            @* Botones *@
-                            <td class="text-center">
-                                <a href="/Estudiante/Edit/@estudiante.EstudianteId" class="btn btn-outline-primary bi bi-pencil-square"></a>
-                                <button type="button" class="btn btn-outline-danger bi bi-trash ms-2" @onclick="() => OnShowModalClick(estudiante.EstudianteId)"></button>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+            <QuickGrid Items="ListaEstudiantes.AsQueryable()" Class="table table-hover mt-3">
+                <PropertyColumn Property="@(e => e.EstudianteId)" Title="EstudianteId" Sortable="true" />
+                <PropertyColumn Property="@(e => e.Nombres)" Title="Nombres" Sortable="true" />
+                <PropertyColumn Property="@(e => e.Direccion)" Title="Dirección" Sortable="true" />
+                <PropertyColumn Property="@(e => e.Email)" Title="Email" Sortable="true" />
+                <PropertyColumn Property="@(e => e.FechaNacimiento)" Title="Fecha de Nacimiento" Format="dd/MM/yyyy" Sortable="true" />
+                <TemplateColumn Title="Opciones" Align="Align.Center">
+                    <div class="d-flex text-nowrap">
+                        <a href="/Estudiante/Edit/@context.EstudianteId" class="btn btn-outline-primary bi bi-pencil-square"></a>
+                        <button type="button" class="btn btn-outline-danger bi bi-trash ms-2" @onclick="() => OnShowModalClick(context.EstudianteId)"></button>
+                    </div>
+                </TemplateColumn>
+            </QuickGrid>
         </div>
         
         <div class="card-footer d-flex justify-content-between align-center mb-4">
