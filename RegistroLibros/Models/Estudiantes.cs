@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RegistroLibros.Models
 {
@@ -19,5 +20,8 @@ namespace RegistroLibros.Models
 
         [Required(ErrorMessage = "Debe ingresar la fecha de nacimiento")]
         public DateTime? FechaNacimiento { get; set; }
+
+        [InverseProperty("Estudiante")]
+        public virtual ICollection<Prestamos> Prestamos { get; set; } = new List<Prestamos>();
     }
 }

@@ -1,17 +1,16 @@
-﻿@page "/Estudiante/Edit/{EstudianteId:int}"
+﻿@page "/Estudiante/Create"
 @inject EstudiantesServices estudianteService
 @inject NavigationManager navigationManager
 
-<PageTitle>Modificar Estudiante</PageTitle>
+<PageTitle>Crear Estudiante</PageTitle>
 
-<EditForm Model="Estudiante" OnValidSubmit="Modificar">
+<EditForm Model="Estudiante" OnValidSubmit="Guardar">
     <DataAnnotationsValidator />
-    <ValidationSummary />
 
     <div class="container">
         <div class="card shadow-lg">
             <div class="card-header text-center">
-                <h5 class="card-title">Modificar Estudiante</h5>
+                <h5 class="card-title">Crear Estudiante</h5>
             </div>
 
             @* Nombres *@
@@ -46,49 +45,37 @@
 
             @* Botones de Acción *@
             <div class="card-footer text-center mt-2">
-                <a href="/Estudiante/Index" class="btn btn-secondary">
-                    <span class="bi bi-arrow-left"></span> Volver
-                </a>
-                <button type="submit" class="btn btn-primary bi bi-floppy"> Modificar</button>
-                <a href="/Estudiante/Delete/@Estudiante.EstudianteId" class="btn btn-danger bi bi-trash"> Eliminar</a>
+                <a href="/Estudiante/Index" class="btn btn-secondary"> <span class="bi bi-arrow-left"></span> Volver</a>
+                <button type="submit" class="btn btn-primary bi bi-floppy"> Guardar</button>
             </div>
         </div>
     </div>
 </EditForm>
 
 @code {
-    [Parameter]
-    public int EstudianteId { get; set; }
-
     public Estudiantes Estudiante { get; set; } = new Estudiantes();
 
-    protected override async Task OnInitializedAsync()
-    {
-        Estudiante = await estudianteService.Buscar(EstudianteId);
-    }
-
-    public async Task Modificar()
+    public async Task Guardar()
     {
         Estudiante.Nombres = Estudiante.Nombres?.Trim();
 
-        var nombreExiste = await estudianteService.GetList(e => e.Nombres!.ToLower() == Estudiante.Nombres!.ToLower() && e.EstudianteId != Estudiante.EstudianteId);
-
+        var nombreExiste = await estudianteService.GetList(e => e.Nombres!.ToLower() == Estudiante.Nombres!.ToLower());
+        
         if (nombreExiste.Any())
         {
-            toastService.ShowError("Ya existe otro estudiante registrado con este nombre.");
-            return;
+            toastService.ShowError("Ya existe un estudiante registrado con este nombre.");
+            return; 
         }
 
-        var modificado = await estudianteService.Guardar(Estudiante);
-
-        if (modificado)
+        var creado = await estudianteService.Guardar(Estudiante);
+        if (creado)
         {
-            toastService.ShowSuccess("Se ha modificado correctamente.");
+            toastService.ShowSuccess("Estudiante guardado correctamente.");
             navigationManager.NavigateTo("/Estudiante/Index");
         }
         else
         {
-            toastService.ShowError("No se ha podido modificar correctamente.");
+            toastService.ShowError("No se pudo guardar el estudiante.");
         }
     }
 }

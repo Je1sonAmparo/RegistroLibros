@@ -1,17 +1,15 @@
-﻿@page "/Libro/Edit/{LibroId:int}"
+﻿@page "/Libro/Create"
 @inject LibrosServices librosService
 @inject NavigationManager navigationManager
 
-<PageTitle>Modificar Libro</PageTitle>
-
-<EditForm Model="Libro" OnValidSubmit="Modificar">
+<PageTitle>Create</PageTitle>
+<EditForm Model="Libro" OnValidSubmit="Guardar">
     <DataAnnotationsValidator />
-    <ValidationSummary />
 
     <div class="container">
         <div class="card shadow-lg">
             <div class="card-header text-center">
-                <h5 class="card-title">Modificar Libro</h5>
+                <h5 class="card-title">Crear Libro</h5>
             </div>
 
             @* Título *@
@@ -39,49 +37,37 @@
 
             @* Botones de Acción *@
             <div class="card-footer text-center mt-2">
-                <a href="/Libro/Index" class="btn btn-secondary">
-                    <span class="bi bi-arrow-left"></span> Volver
-                </a>
-                <button type="submit" class="btn btn-primary bi bi-floppy"> Modificar</button>
-                <a href="/Libro/Delete/@Libro.LibroId" class="btn btn-danger bi bi-trash"> Eliminar</a>
+                <a href="/Libro/Index" class="btn btn-secondary"> <span class="bi bi-arrow-left"></span> Volver</a>
+                <button type="submit" class="btn btn-primary bi bi-floppy"> Guardar</button>
             </div>
         </div>
     </div>
 </EditForm>
 
 @code {
-    [Parameter]
-    public int LibroId { get; set; }
-
     public Libros Libro { get; set; } = new Libros();
 
-    protected override async Task OnInitializedAsync()
+    public async Task Guardar()
     {
-        Libro = await librosService.Buscar(LibroId);
-    }
+        Libro.Titulo = Libro.Titulo.Trim();
 
-    public async Task Modificar()
-    {
-        Libro.Titulo = Libro.Titulo?.Trim();
-
-        var tituloExiste = await librosService.GetList(l => l.Titulo!.ToLower() == Libro.Titulo!.ToLower() && l.LibroId != Libro.LibroId);
-
+        var tituloExiste = await librosService.GetList(l => l.Titulo!.ToLower() == Libro.Titulo!.ToLower());
+        
         if (tituloExiste.Any())
         {
-            toastService.ShowError("Ya existe otro libro registrado con este título.");
-            return;
+            toastService.ShowError("Ya existe un libro registrado con este título.");
+            return; 
         }
 
-        var modificado = await librosService.Guardar(Libro);
-
-        if (modificado)
+        var creado = await librosService.Guardar(Libro);
+        if (creado)
         {
-            toastService.ShowSuccess("Se ha modificado correctamente.");
+            toastService.ShowSuccess("Libro guardado correctamente.");
             navigationManager.NavigateTo("/Libro/Index");
         }
         else
         {
-            toastService.ShowError("No se ha podido modificar correctamente.");
+            toastService.ShowError("No se pudo guardar el libro.");
         }
     }
 }
