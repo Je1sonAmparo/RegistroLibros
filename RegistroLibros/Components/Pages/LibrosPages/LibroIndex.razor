@@ -78,7 +78,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        ListaLibros = await librosService.GetList(p => p.LibroId > 0);
+        ListaLibros = await librosService.GetList(p => true);
     }
 
     private async Task Buscar()
@@ -95,7 +95,7 @@
             }
         }
         else
-            ListaLibros = await librosService.GetList(p => p.LibroId > 0);
+            ListaLibros = await librosService.GetList(p => true);
     }
 
     private Modal modal = default!;

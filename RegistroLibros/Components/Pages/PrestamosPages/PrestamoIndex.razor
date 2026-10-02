@@ -83,7 +83,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        ListaPrestamos = await prestamosService.GetList(p => p.PrestamoId > 0);
+        ListaPrestamos = await prestamosService.GetList(p => true);
     }
 
     private async Task Buscar()
@@ -100,7 +100,7 @@
             }
         }
         else
-            ListaPrestamos = await prestamosService.GetList(p => p.PrestamoId > 0);
+            ListaPrestamos = await prestamosService.GetList(p => true);
     }
 
     private Modal modal = default!;
