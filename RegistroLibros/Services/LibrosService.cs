@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace RegistroLibros.Services;
 
-public class LibrosServices(
+public class LibrosService(
     IDbContextFactory<Contexto> contextFactory
     ) : Aplicada1.Core.IService<Libros, int>
 {

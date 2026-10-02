@@ -14,7 +14,7 @@ var ConStr = builder.Configuration.GetConnectionString("SqlConStr");
 builder.Services.AddDbContextFactory<Contexto>(options =>
     options.UseSqlServer(ConStr));
 
-builder.Services.AddScoped<LibrosServices>();
+builder.Services.AddScoped<LibrosService>();
 builder.Services.AddScoped<EstudiantesServices>();
 builder.Services.AddScoped<PrestamosService>();
 
