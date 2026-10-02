@@ -44,7 +44,7 @@ public class PrestamosService(
 
     public async Task<Prestamos?> Buscar(int prestamoId)
     {
-        await using var contexto = await DbFactory.CreateDbContextAsync();
+        await using var contexto = await contextFactory.CreateDbContextAsync();
         return await contexto.Prestamos
             .Include(p => p.Estudiante)
             .Include(p => p.Libro)
