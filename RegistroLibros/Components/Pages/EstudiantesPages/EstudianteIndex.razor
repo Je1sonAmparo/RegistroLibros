@@ -49,7 +49,7 @@
                     <TemplateColumn Title="Opciones" Align="Align.Center">
                         <div class="d-flex text-nowrap">
                             <a href="/Estudiante/Edit/@context.EstudianteId" class="btn btn-outline-primary bi bi-pencil-square"></a>
-                            <button type="button" class="btn btn-outline-danger bi bi-trash ms-2" @onclick="() => OnShowModalClick(context.EstudianteId)"></button>
+                            <button type="button" class="btn btn-outline-danger bi bi-trash ms-2" data-toggle="modal" data-target="#modalEliminarEstudiante" @onclick="() => estudianteIdAEliminar = context.EstudianteId"></button>
                         </div>
                     </TemplateColumn>
                 </QuickGrid>
@@ -62,15 +62,26 @@
     </div>
 </div>
 
-<Modal @ref="modal" Title="Eliminar Estudiante">
-    <BodyTemplate>
-        ¿Estás seguro de que quieres eliminar este estudiante?
-    </BodyTemplate>
-    <FooterTemplate>
-        <Button Color="ButtonColor.Secondary" @onclick="OnHideModalClick">Cancelar</Button>
-        <Button Color="ButtonColor.Danger" @onclick="Eliminar">Sí, eliminar</Button>
-    </FooterTemplate>
-</Modal>
+@* Modal de eliminación *@
+<div class="modal fade" id="modalEliminarEstudiante" tabindex="-1" role="dialog" aria-labelledby="modalEliminarEstudianteLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalEliminarEstudianteLabel">Eliminar Estudiante</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        ¿Estás seguro de que deseas eliminar este estudiante?.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal" @onclick="Eliminar">Sí, eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 @code {
     public List<Estudiantes> ListaEstudiantes { get; set; } = new List<Estudiantes>();
@@ -95,19 +106,7 @@
             ListaEstudiantes = await estudianteService.GetList(p => true);
     }
 
-    private Modal modal = default!;
     private int estudianteIdAEliminar;
-
-    private async Task OnShowModalClick(int id)
-    {
-        estudianteIdAEliminar = id;
-        await modal.ShowAsync();
-    }
-
-    private async Task OnHideModalClick()
-    {
-        await modal.HideAsync();
-    }
 
     private async Task Eliminar()
     {
@@ -121,6 +120,5 @@
         {
             toastService.ShowError("No se pudo eliminar el estudiante.");
         }
-        await modal.HideAsync();
     }
 }
