@@ -64,21 +64,32 @@
             <div class="card-footer text-center mt-2">
                 <a href="/Prestamo/Index" class="btn btn-secondary"> <span class="bi bi-arrow-left"></span> Volver</a>
                 <button type="submit" class="btn btn-primary bi bi-floppy"> Modificar</button>
-                <button type="button" class="btn btn-danger bi bi-trash" @onclick="OnShowModalClick"> Eliminar</button>
+                <button type="button" class="btn btn-danger bi bi-trash" data-toggle="modal" data-target="#modalEliminarPrestamo"> Eliminar</button>
             </div>
         </div>
     </div>
 </EditForm>
 
-<Modal @ref="modal" Title="Eliminar Préstamo">
-    <BodyTemplate>
-        ¿Estás seguro de que quieres eliminar este préstamo?
-    </BodyTemplate>
-    <FooterTemplate>
-        <Button Color="ButtonColor.Secondary" @onclick="OnHideModalClick">Cancelar</Button>
-        <Button Color="ButtonColor.Danger" @onclick="Eliminar">Sí, eliminar</Button>
-    </FooterTemplate>
-</Modal>
+@* Modal de eliminación *@
+<div class="modal fade" id="modalEliminarPrestamo" tabindex="-1" role="dialog" aria-labelledby="modalEliminarPrestamoLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalEliminarPrestamoLabel">Eliminar Préstamo</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        ¿Estás seguro de que deseas eliminar este préstamo?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal" @onclick="Eliminar">Sí, eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 @code {
     [Parameter]
@@ -133,18 +144,6 @@
         }
     }
 
-    private Modal modal = default!;
-
-    private async Task OnShowModalClick()
-    {
-        await modal.ShowAsync();
-    }
-
-    private async Task OnHideModalClick()
-    {
-        await modal.HideAsync();
-    }
-
     private async Task Eliminar()
     {
         var eliminado = await prestamosService.Eliminar(PrestamoId);
@@ -157,6 +156,5 @@
         {
             toastService.ShowError("No se pudo eliminar el préstamo.");
         }
-        await modal.HideAsync();
     }
 }
