@@ -53,7 +53,7 @@ public class PrestamosService(
 
     public async Task<List<Prestamos>> GetList(Expression<Func<Prestamos, bool>> criterio)
     {
-        await using var contexto = await DbFactory.CreateDbContextAsync();
+        await using var contexto = await contextFactory.CreateDbContextAsync();
         return await contexto.Prestamos
             .Include(p => p.Estudiante)
             .Include(p => p.Libro)
