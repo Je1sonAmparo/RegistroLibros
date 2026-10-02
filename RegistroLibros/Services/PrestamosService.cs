@@ -9,6 +9,7 @@ public class PrestamosService(
     IDbContextFactory<Contexto> contextFactory
     ) : Aplicada1.Core.IService<Prestamos, int>
 {
+
     public async Task<bool> Guardar(Prestamos prestamo)
     {
         if (!await Existe(prestamo.PrestamoId))
