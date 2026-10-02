@@ -30,7 +30,7 @@ public class PrestamosService(
 
     private async Task<bool> Insertar(Prestamos prestamo)
     {
-        await using var contexto = await DbFactory.CreateDbContextAsync();
+        await using var contexto = await contextFactory.CreateDbContextAsync();
         contexto.Prestamos.Add(prestamo);
         return await contexto.SaveChangesAsync() > 0;
     }
