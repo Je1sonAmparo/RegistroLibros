@@ -1,8 +1,9 @@
 @page "/Prestamo/Edit/{PrestamoId:int}"
 @inject PrestamosService prestamosService
-@inject EstudiantesServices estudiantesService
-@inject LibrosServices librosService
+@inject EstudiantesService estudiantesService
+@inject LibrosService librosService
 @inject NavigationManager navigationManager
+@inject ToastService toastService
 
 <PageTitle>Editar Préstamo</PageTitle>
 <EditForm Model="Prestamo" OnValidSubmit="Guardar">
