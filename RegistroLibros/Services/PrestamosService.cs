@@ -37,7 +37,7 @@ public class PrestamosService(
 
     private async Task<bool> Modificar(Prestamos prestamo)
     {
-        await using var contexto = await DbFactory.CreateDbContextAsync();
+        await using var contexto = await contextFactory.CreateDbContextAsync();
         contexto.Update(prestamo);
         return await contexto.SaveChangesAsync() > 0;
     }
