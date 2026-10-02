@@ -23,7 +23,7 @@ public class PrestamosService(
 
     private async Task<bool> Existe(int prestamoId)
     {
-        await using var contexto = await DbFactory.CreateDbContextAsync();
+        await using var contexto = await contextFactory.CreateDbContextAsync();
         return await contexto.Prestamos
             .AnyAsync(p => p.PrestamoId == prestamoId);
     }
