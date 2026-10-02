@@ -5,8 +5,9 @@ using System.Linq.Expressions;
 
 namespace RegistroLibros.Services;
 
-public class PrestamosService(IDbContextFactory<Contexto> DbFactory)
-    : Aplicada1.Core.IService<Prestamos, int>
+public class PrestamosService(
+    IDbContextFactory<Contexto> contextFactory
+    ) : Aplicada1.Core.IService<Prestamos, int>
 {
     public async Task<bool> Guardar(Prestamos prestamo)
     {
