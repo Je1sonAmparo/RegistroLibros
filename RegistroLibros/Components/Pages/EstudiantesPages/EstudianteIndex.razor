@@ -79,7 +79,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        ListaEstudiantes = await estudianteService.GetList(p => p.EstudianteId > 0);
+        ListaEstudiantes = await estudianteService.GetList(p => true);
     }
 
     private async Task Buscar()
@@ -92,7 +92,7 @@
             }
         }
         else
-            ListaEstudiantes = await estudianteService.GetList(p => p.EstudianteId > 0);
+            ListaEstudiantes = await estudianteService.GetList(p => true);
     }
 
     private Modal modal = default!;
