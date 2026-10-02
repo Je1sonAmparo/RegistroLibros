@@ -1,6 +1,7 @@
 ﻿@page "/Libro/Create"
-@inject LibrosServices librosService
+@inject LibrosService librosService
 @inject NavigationManager navigationManager
+@inject ToastService toastService
 
 <PageTitle>Create</PageTitle>
 <EditForm Model="Libro" OnValidSubmit="Guardar">
