@@ -100,12 +100,7 @@
     {
         ListaEstudiantes = await estudiantesService.GetList(e => true);
         ListaLibros = await librosService.GetList(l => true);
-        
-        var prestamoEncontrado = await prestamosService.Buscar(PrestamoId);
-        if (prestamoEncontrado != null)
-        {
-            Prestamo = prestamoEncontrado;
-        }
+        Prestamo = await prestamosService.Buscar(PrestamoId) ?? new Prestamos();
     }
 
     public async Task Guardar()
