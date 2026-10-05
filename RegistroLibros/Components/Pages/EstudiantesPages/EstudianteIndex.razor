@@ -49,7 +49,7 @@
                     <TemplateColumn Title="Opciones" Align="Align.Center">
                         <div class="d-flex text-nowrap">
                             <a href="/Estudiante/Edit/@context.EstudianteId" class="btn btn-outline-primary bi bi-pencil-square"></a>
-                            <button type="button" class="btn btn-outline-danger bi bi-trash ms-2" data-toggle="modal" data-target="#modalEliminarEstudiante" @onclick="() => estudianteIdAEliminar = context.EstudianteId"></button>
+                            <button type="button" class="btn btn-outline-danger bi bi-trash ms-2" data-bs-toggle="modal" data-bs-target="#modalEliminarEstudiante" @onclick="() => estudianteIdAEliminar = context.EstudianteId"></button>
                         </div>
                     </TemplateColumn>
                 </QuickGrid>
@@ -63,21 +63,19 @@
 </div>
 
 @* Modal de eliminación *@
-<div class="modal fade" id="modalEliminarEstudiante" tabindex="-1" role="dialog" aria-labelledby="modalEliminarEstudianteLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
+<div class="modal fade" id="modalEliminarEstudiante" tabindex="-1" aria-labelledby="modalEliminarEstudianteLabel" aria-hidden="true">
+  <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="modalEliminarEstudianteLabel">Eliminar Estudiante</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+        <h1 class="modal-title fs-5" id="modalEliminarEstudianteLabel">Eliminar Estudiante</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         ¿Estás seguro de que deseas eliminar este estudiante?.
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-danger" data-dismiss="modal" @onclick="Eliminar">Sí, eliminar</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" @onclick="Eliminar">Sí, eliminar</button>
       </div>
     </div>
   </div>
