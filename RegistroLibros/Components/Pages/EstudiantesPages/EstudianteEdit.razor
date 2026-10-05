@@ -84,7 +84,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Estudiante = await estudianteService.Buscar(EstudianteId);
+        Estudiante = await estudianteService.Buscar(EstudianteId) ?? new Estudiantes();
     }
 
     public async Task Modificar()

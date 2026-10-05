@@ -77,7 +77,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Libro = await librosService.Buscar(LibroId);
+        Libro = await librosService.Buscar(LibroId) ?? new Libros();
     }
 
     public async Task Modificar()
