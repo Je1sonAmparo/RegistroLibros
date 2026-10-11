@@ -11,9 +11,6 @@ public class Prestamos
     [Range(1, int.MaxValue, ErrorMessage = "Debe seleccionar un estudiante válido")]
     public int EstudianteId { get; set; }
 
-    [ForeignKey("EstudianteId")]
-    public virtual Estudiantes? Estudiante { get; set; }
-
     [Range(1, int.MaxValue, ErrorMessage = "Debe seleccionar un libro válido")]
     public int LibroId { get; set; }
 
@@ -24,6 +21,7 @@ public class Prestamos
 
     public bool Devuelto { get; set; } = false;
 
+    [ForeignKey("EstudianteId")]
     [InverseProperty("Prestamo")]
-    public virtual ICollection<Devoluciones> Devoluciones { get; set; } = new List<Devoluciones>();
+    public virtual Estudiantes? Estudiante { get; set; }
 }
