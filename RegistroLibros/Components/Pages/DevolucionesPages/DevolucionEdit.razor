@@ -1,0 +1,110 @@
+@page "/Devolucion/Edit/{DevolucionId:int}"
+
+@inject DevolucionesService devolucionesService
+@inject PrestamosService prestamosService
+@inject NavigationManager navigationManager
+@inject ToastService toastService
+
+<PageTitle>Editar Devolución</PageTitle>
+<EditForm Model="Devolucion" OnValidSubmit="Modificar">
+    <DataAnnotationsValidator />
+
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header text-center">
+                <h5 class="card-title">Editar Devolución</h5>
+            </div>
+
+            <div class="card-body">
+                
+                @* Préstamo *@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Préstamo</strong></label>
+                    <InputSelect class="form-control form-select" @bind-Value="Devolucion.PrestamoId">
+                        <option value="0" disabled>Elija un Préstamo</option>
+                        @foreach (var prestamo in ListaPrestamos)
+                        {
+                            <option value="@prestamo.PrestamoId">#@prestamo.PrestamoId - @prestamo.Estudiante?.Nombres (@prestamo.Libro?.Titulo)</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="(() => Devolucion.PrestamoId)" />
+                </div>
+
+                @* Fecha de Devolución *@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Fecha de Devolución</strong></label>
+                    <InputDate class="form-control" @bind-Value="Devolucion.FechaDevolucion"></InputDate>
+                    <ValidationMessage For="(() => Devolucion.FechaDevolucion)" />
+                </div>
+
+            </div>
+
+            @* Botones de Acción *@
+            <div class="card-footer text-center mt-2">
+                <a href="/Devolucion/Index" class="btn btn-secondary"> <span class="bi bi-arrow-left"></span> Volver</a>
+                <button type="submit" class="btn btn-primary bi bi-floppy"> Modificar</button>
+                <button type="button" class="btn btn-danger bi bi-trash" data-bs-toggle="modal" data-bs-target="#modalEliminarDevolucion"> Eliminar</button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@* Modal de eliminación *@
+<div class="modal fade" id="modalEliminarDevolucion" tabindex="-1" aria-labelledby="modalEliminarDevolucionLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="modalEliminarDevolucionLabel">Eliminar Devolución</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        ¿Estás seguro de que deseas eliminar esta devolución?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" @onclick="Eliminar">Sí, eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+@code {
+    [Parameter]
+    public int DevolucionId { get; set; }
+    public Devoluciones Devolucion { get; set; } = new Devoluciones();
+    public List<Prestamos> ListaPrestamos { get; set; } = new List<Prestamos>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Devolucion = await devolucionesService.Buscar(DevolucionId) ?? new Devoluciones();
+        ListaPrestamos = await prestamosService.GetList(p => !p.Devuelto || p.PrestamoId == Devolucion.PrestamoId);
+    }
+
+    public async Task Modificar()
+    {
+        var modificado = await devolucionesService.Guardar(Devolucion);
+        if (modificado)
+        {
+            toastService.ShowSuccess("Devolución modificada correctamente.");
+            navigationManager.NavigateTo("/Devolucion/Index");
+        }
+        else
+        {
+            toastService.ShowError("No se pudo modificar la devolución.");
+        }
+    }
+
+    private async Task Eliminar()
+    {
+        var eliminado = await devolucionesService.Eliminar(DevolucionId);
+        if (eliminado)
+        {
+            toastService.ShowSuccess("Devolución eliminada correctamente.");
+            navigationManager.NavigateTo("/Devolucion/Index");
+        }
+        else
+        {
+            toastService.ShowError("No se pudo eliminar la devolución.");
+        }
+    }
+}
