@@ -33,9 +33,6 @@ namespace RegistroLibros.Migrations
                     b.Property<DateTime>("FechaDevolucion")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Observaciones")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("PrestamoId")
                         .HasColumnType("int");
 
@@ -112,9 +109,6 @@ namespace RegistroLibros.Migrations
                     b.Property<int>("EstudianteId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("FechaDevolucion")
-                        .HasColumnType("datetime2");
-
                     b.Property<DateTime>("FechaPrestamo")
                         .HasColumnType("datetime2");
 
@@ -133,7 +127,7 @@ namespace RegistroLibros.Migrations
             modelBuilder.Entity("RegistroLibros.Models.Devoluciones", b =>
                 {
                     b.HasOne("RegistroLibros.Models.Prestamos", "Prestamo")
-                        .WithMany("Devoluciones")
+                        .WithMany()
                         .HasForeignKey("PrestamoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -168,11 +162,6 @@ namespace RegistroLibros.Migrations
             modelBuilder.Entity("RegistroLibros.Models.Libros", b =>
                 {
                     b.Navigation("Prestamos");
-                });
-
-            modelBuilder.Entity("RegistroLibros.Models.Prestamos", b =>
-                {
-                    b.Navigation("Devoluciones");
                 });
 #pragma warning restore 612, 618
         }
