@@ -22,6 +22,30 @@ namespace RegistroLibros.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("RegistroLibros.Models.Devoluciones", b =>
+                {
+                    b.Property<int>("DevolucionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DevolucionId"));
+
+                    b.Property<DateTime>("FechaDevolucion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Observaciones")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PrestamoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("DevolucionId");
+
+                    b.HasIndex("PrestamoId");
+
+                    b.ToTable("Devoluciones");
+                });
+
             modelBuilder.Entity("RegistroLibros.Models.Estudiantes", b =>
                 {
                     b.Property<int>("EstudianteId")
@@ -106,6 +130,17 @@ namespace RegistroLibros.Migrations
                     b.ToTable("Prestamos");
                 });
 
+            modelBuilder.Entity("RegistroLibros.Models.Devoluciones", b =>
+                {
+                    b.HasOne("RegistroLibros.Models.Prestamos", "Prestamo")
+                        .WithMany("Devoluciones")
+                        .HasForeignKey("PrestamoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Prestamo");
+                });
+
             modelBuilder.Entity("RegistroLibros.Models.Prestamos", b =>
                 {
                     b.HasOne("RegistroLibros.Models.Estudiantes", "Estudiante")
@@ -133,6 +168,11 @@ namespace RegistroLibros.Migrations
             modelBuilder.Entity("RegistroLibros.Models.Libros", b =>
                 {
                     b.Navigation("Prestamos");
+                });
+
+            modelBuilder.Entity("RegistroLibros.Models.Prestamos", b =>
+                {
+                    b.Navigation("Devoluciones");
                 });
 #pragma warning restore 612, 618
         }

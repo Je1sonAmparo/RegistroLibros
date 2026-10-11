@@ -26,4 +26,7 @@ public class Prestamos
     public DateTime FechaPrestamo { get; set; } = DateTime.Now;
 
     public bool Devuelto { get; set; } = false;
+
+    [InverseProperty("Prestamo")]
+    public virtual ICollection<Devoluciones> Devoluciones { get; set; } = new List<Devoluciones>();
 }
