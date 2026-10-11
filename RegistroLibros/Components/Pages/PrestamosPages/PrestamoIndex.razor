@@ -47,7 +47,6 @@
                     <PropertyColumn Property="@(p => p.Estudiante!.Nombres)" Title="Estudiante" Sortable="true" />
                     <PropertyColumn Property="@(p => p.Libro!.Titulo)" Title="Libro" Sortable="true" />
                     <PropertyColumn Property="@(p => p.FechaPrestamo)" Title="Fecha Préstamo" Format="dd/MM/yyyy" Sortable="true" />
-                    <PropertyColumn Property="@(p => p.FechaDevolucion)" Title="Fecha Devolución" Format="dd/MM/yyyy" Sortable="true" />
                     <TemplateColumn Title="Devuelto" Sortable="true">
                         @(context.Devuelto ? "Sí" : "No")
                     </TemplateColumn>
