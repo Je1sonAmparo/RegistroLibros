@@ -89,6 +89,9 @@ namespace RegistroLibros.Migrations
                     b.Property<int>("CantidadDisponible")
                         .HasColumnType("int");
 
+                    b.Property<int>("CantidadPrestamos")
+                        .HasColumnType("int");
+
                     b.Property<string>("Titulo")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
