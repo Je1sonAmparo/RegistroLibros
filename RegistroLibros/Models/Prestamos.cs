@@ -20,9 +20,6 @@ public class Prestamos
     [ForeignKey("LibroId")]
     public virtual Libros? Libro { get; set; }
 
-    [Required(ErrorMessage = "Debe ingresar la fecha de devolución")]
-    public DateTime FechaDevolucion { get; set; } = DateTime.Now;
-
     public DateTime FechaPrestamo { get; set; } = DateTime.Now;
 
     public bool Devuelto { get; set; } = false;

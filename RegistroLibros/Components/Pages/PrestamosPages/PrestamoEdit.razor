@@ -50,14 +50,6 @@
                     <InputDate class="form-control" @bind-Value="Prestamo.FechaPrestamo"></InputDate>
                     <ValidationMessage For="(() => Prestamo.FechaPrestamo)" />
                 </div>
-
-                @* Fecha de Devolución *@
-                <div class="mb-3">
-                    <label class="form-label"><strong>Fecha de Devolución</strong></label>
-                    <InputDate class="form-control" @bind-Value="Prestamo.FechaDevolucion"></InputDate>
-                    <ValidationMessage For="(() => Prestamo.FechaDevolucion)" />
-                </div>
-                
             </div>
 
             @* Botones de Acción *@
@@ -105,12 +97,6 @@
 
     public async Task Guardar()
     {
-        if (Prestamo.FechaDevolucion < Prestamo.FechaPrestamo)
-        {
-            toastService.ShowError("La fecha de devolución no puede ser menor a la fecha de préstamo.");
-            return;
-        }
-
         var estudiantePrestamos = await prestamosService.GetList(p => p.EstudianteId == Prestamo.EstudianteId && !p.Devuelto && p.PrestamoId != Prestamo.PrestamoId);
         if (estudiantePrestamos.Any())
         {
