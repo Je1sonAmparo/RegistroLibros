@@ -82,9 +82,29 @@
 
     public async Task Modificar()
     {
+        var anterior = await devolucionesService.Buscar(Devolucion.DevolucionId);
+        int prestamoAnteriorId = anterior?.PrestamoId ?? 0;
+
         var modificado = await devolucionesService.Guardar(Devolucion);
         if (modificado)
         {
+            if (prestamoAnteriorId != 0 && prestamoAnteriorId != Devolucion.PrestamoId)
+            {
+                var prestamoAnterior = await prestamosService.Buscar(prestamoAnteriorId);
+                if (prestamoAnterior != null)
+                {
+                    prestamoAnterior.Devuelto = false;
+                    await prestamosService.Guardar(prestamoAnterior);
+                }
+            }
+
+            var prestamoActual = await prestamosService.Buscar(Devolucion.PrestamoId);
+            if (prestamoActual != null)
+            {
+                prestamoActual.Devuelto = true;
+                await prestamosService.Guardar(prestamoActual);
+            }
+
             toastService.ShowSuccess("Devolución modificada correctamente.");
             navigationManager.NavigateTo("/Devolucion/Index");
         }
@@ -96,9 +116,17 @@
 
     private async Task Eliminar()
     {
+        var prestamoId = Devolucion.PrestamoId;
         var eliminado = await devolucionesService.Eliminar(DevolucionId);
         if (eliminado)
         {
+            var prestamo = await prestamosService.Buscar(prestamoId);
+            if (prestamo != null)
+            {
+                prestamo.Devuelto = false;
+                await prestamosService.Guardar(prestamo);
+            }
+
             toastService.ShowSuccess("Devolución eliminada correctamente.");
             navigationManager.NavigateTo("/Devolucion/Index");
         }

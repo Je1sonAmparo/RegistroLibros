@@ -91,7 +91,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        ListaPrestamos = await prestamosService.GetList(p => true);
+        ListaPrestamos = await prestamosService.GetList(p => !p.Devuelto);
     }
 
     private async Task Buscar()

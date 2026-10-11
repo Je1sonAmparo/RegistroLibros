@@ -1,6 +1,7 @@
 @page "/Devolucion/Index"
 
 @inject DevolucionesService devolucionesService
+@inject PrestamosService prestamosService
 @inject ToastService toastService
 
 <PageTitle>Registro de Devoluciones</PageTitle>
@@ -112,9 +113,22 @@
 
     private async Task Eliminar()
     {
+        var devolucion = await devolucionesService.Buscar(devolucionIdAEliminar);
+        int prestamoId = devolucion?.PrestamoId ?? 0;
+
         var eliminado = await devolucionesService.Eliminar(devolucionIdAEliminar);
         if (eliminado)
         {
+            if (prestamoId != 0)
+            {
+                var prestamo = await prestamosService.Buscar(prestamoId);
+                if (prestamo != null)
+                {
+                    prestamo.Devuelto = false;
+                    await prestamosService.Guardar(prestamo);
+                }
+            }
+
             toastService.ShowSuccess("Devolución eliminada correctamente.");
             await Buscar();
         }
