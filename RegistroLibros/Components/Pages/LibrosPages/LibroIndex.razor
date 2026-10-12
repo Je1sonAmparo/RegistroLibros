@@ -93,8 +93,11 @@
 
     protected override async Task OnInitializedAsync()
     {
-        ListaLibros = await librosService.GetList(p => true);
-        ListaDevoluciones = await devolucionesService.GetList(d => true);
+        var librosResult = await librosService.GetList(p => true);
+        librosResult.OnSuccess(libros => ListaLibros = libros);
+
+        var devolucionesResult = await devolucionesService.GetList(d => true);
+        devolucionesResult.OnSuccess(devoluciones => ListaDevoluciones = devoluciones);
     }
 
     private double ObtenerPromedioDiasPrestado(int libroId)
@@ -112,42 +115,51 @@
         {
             if (Filtro == "Titulo")
             {
-                ListaLibros = await librosService.GetList(p => p.Titulo!.ToLower().Contains(ValorFiltro.ToLower()));
+                var librosResult = await librosService.GetList(p => p.Titulo!.ToLower().Contains(ValorFiltro.ToLower()));
+                librosResult.OnSuccess(libros => ListaLibros = libros);
             }
             else if (Filtro == "Autor")
             {
-                ListaLibros = await librosService.GetList(p => p.Autor!.ToLower().Contains(ValorFiltro.ToLower()));
+                var librosResult = await librosService.GetList(p => p.Autor!.ToLower().Contains(ValorFiltro.ToLower()));
+                librosResult.OnSuccess(libros => ListaLibros = libros);
             }
         }
         else
         {
-            ListaLibros = await librosService.GetList(p => true);
+            var librosResult = await librosService.GetList(p => true);
+            librosResult.OnSuccess(libros => ListaLibros = libros);
         }
 
-        ListaDevoluciones = await devolucionesService.GetList(d => true);
+        var devolucionesResult = await devolucionesService.GetList(d => true);
+        devolucionesResult.OnSuccess(devoluciones => ListaDevoluciones = devoluciones);
     }
 
     private int libroIdAEliminar;
 
     private async Task Eliminar()
     {
-        var prestamosActivos = await prestamosService.GetList(p =>
+        var prestamosActivosResult = await prestamosService.GetList(p =>
             p.LibroId == libroIdAEliminar && !p.Devuelto);
-        if (prestamosActivos.Any())
+        var tienePrestamosActivos = false;
+        prestamosActivosResult.OnSuccess(prestamos => tienePrestamosActivos = prestamos.Any());
+        if (prestamosActivosResult.IsFailure)
+        {
+            toastService.ShowError("No se pudieron consultar los préstamos activos del libro.");
+            return;
+        }
+
+        if (tienePrestamosActivos)
         {
             toastService.ShowError("No se puede eliminar el libro porque está prestado actualmente.");
             return;
         }
 
-        var eliminado = await librosService.Eliminar(libroIdAEliminar);
-        if (eliminado)
+        var result = await librosService.Eliminar(libroIdAEliminar);
+        result.OnSuccess(() => toastService.ShowSuccess("Libro eliminado correctamente."));
+        result.OnFailure(() => toastService.ShowError("No se pudo eliminar correctamente"));
+        if (result.IsSuccess)
         {
-            toastService.ShowSuccess("Libro eliminado correctamente.");
             await Buscar();
-        }
-        else
-        {
-            toastService.ShowError("No se pudo eliminar el libro.");
         }
     }
 }
