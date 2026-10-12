@@ -85,52 +85,62 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Estudiante = await estudianteService.Buscar(EstudianteId) ?? new Estudiantes();
+        var result = await estudianteService.Buscar(EstudianteId);
+        result.OnSuccess(estudiante => Estudiante = estudiante ?? new Estudiantes());
     }
 
     public async Task Modificar()
     {
         Estudiante.Nombres = Estudiante.Nombres?.Trim();
 
-        var nombreExiste = await estudianteService.GetList(e => e.Nombres!.ToLower() == Estudiante.Nombres!.ToLower() && e.EstudianteId != Estudiante.EstudianteId);
+        var nombreExisteResult = await estudianteService.GetList(e => e.Nombres!.ToLower() == Estudiante.Nombres!.ToLower() && e.EstudianteId != Estudiante.EstudianteId);
+        var nombreExiste = false;
+        nombreExisteResult.OnSuccess(estudiantes => nombreExiste = estudiantes.Any());
 
-        if (nombreExiste.Any())
+        if (nombreExisteResult.IsFailure)
+        {
+            toastService.ShowError("No se pudo validar el nombre del estudiante.");
+            return;
+        }
+
+        if (nombreExiste)
         {
             toastService.ShowError("Ya existe otro estudiante registrado con este nombre.");
             return;
         }
 
-        var modificado = await estudianteService.Guardar(Estudiante);
-
-        if (modificado)
+        var result = await estudianteService.Guardar(Estudiante);
+        result.OnSuccess(() =>
         {
             toastService.ShowSuccess("Se ha modificado correctamente.");
             navigationManager.NavigateTo("/Estudiante/Index");
-        }
-        else
-        {
-            toastService.ShowError("No se ha podido modificar correctamente.");
-        }
+        });
+        result.OnFailure(() => toastService.ShowError("No se ha podido modificar"));
     }
 
     private async Task Eliminar()
     {
-        var prestamos = await prestamosService.GetList(p => p.EstudianteId == EstudianteId);
-        if (prestamos.Any())
+        var prestamosResult = await prestamosService.GetList(p => p.EstudianteId == EstudianteId);
+        var tienePrestamos = false;
+        prestamosResult.OnSuccess(prestamos => tienePrestamos = prestamos.Any());
+        if (prestamosResult.IsFailure)
+        {
+            toastService.ShowError("No se pudieron consultar los préstamos del estudiante.");
+            return;
+        }
+
+        if (tienePrestamos)
         {
             toastService.ShowError("No se puede eliminar el estudiante porque tiene préstamos registrados.");
             return;
         }
 
-        var eliminado = await estudianteService.Eliminar(EstudianteId);
-        if (eliminado)
+        var result = await estudianteService.Eliminar(EstudianteId);
+        result.OnSuccess(() =>
         {
             toastService.ShowSuccess("Estudiante eliminado correctamente.");
             navigationManager.NavigateTo("/Estudiante/Index");
-        }
-        else
-        {
-            toastService.ShowError("No se pudo eliminar el estudiante.");
-        }
+        });
+        result.OnFailure(() => toastService.ShowError("No se pudo eliminar correctamente"));
     }
 }

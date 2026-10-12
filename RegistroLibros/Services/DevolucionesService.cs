@@ -1,3 +1,4 @@
+﻿using Aplicada1.Core;
 using Microsoft.EntityFrameworkCore;
 using RegistroLibros.Context;
 using RegistroLibros.Models;
@@ -7,17 +8,19 @@ namespace RegistroLibros.Services;
 
 public class DevolucionesService(
     IDbContextFactory<Contexto> contextFactory
-    ) : Aplicada1.Core.IService<Devoluciones, int>
+    ) : IServiceResult<Devoluciones, int>
 {
-    public async Task<bool> Guardar(Devoluciones devolucion)
+    public async Task<Result> Guardar(Devoluciones devolucion)
     {
         if (!await Existe(devolucion.DevolucionId))
         {
-            return await Insertar(devolucion);
+            var inserto = await Insertar(devolucion);
+            return Result.Success(inserto);
         }
         else
         {
-            return await Modificar(devolucion);
+            var modifico = await Modificar(devolucion);
+            return Result.Success(modifico);
         }
     }
 
@@ -31,13 +34,14 @@ public class DevolucionesService(
     private async Task<bool> Insertar(Devoluciones devolucion)
     {
         await using var contexto = await contextFactory.CreateDbContextAsync();
-        contexto.Devoluciones.Add(devolucion);
 
-        if (!await AfectarPrestamo(contexto, devolucion.PrestamoId, true))
+        var resultadoPrestamo = await AfectarPrestamo(contexto, devolucion.PrestamoId, true);
+        if (!resultadoPrestamo)
         {
             return false;
         }
 
+        contexto.Devoluciones.Add(devolucion);
         return await contexto.SaveChangesAsync() > 0;
     }
 
@@ -54,8 +58,14 @@ public class DevolucionesService(
 
         if (existente.PrestamoId != devolucion.PrestamoId)
         {
-            if (!await AfectarPrestamo(contexto, existente.PrestamoId, false)
-                || !await AfectarPrestamo(contexto, devolucion.PrestamoId, true))
+            var resultadoPrestamoAnterior = await AfectarPrestamo(contexto, existente.PrestamoId, false);
+            if (!resultadoPrestamoAnterior)
+            {
+                return false;
+            }
+
+            var resultadoPrestamoNuevo = await AfectarPrestamo(contexto, devolucion.PrestamoId, true);
+            if (!resultadoPrestamoNuevo)
             {
                 return false;
             }
@@ -79,7 +89,7 @@ public class DevolucionesService(
         return true;
     }
 
-    public async Task<Devoluciones?> Buscar(int devolucionId)
+    public async Task<Result<Devoluciones?>> Buscar(int devolucionId)
     {
         await using var contexto = await contextFactory.CreateDbContextAsync();
         return await contexto.Devoluciones
@@ -90,7 +100,7 @@ public class DevolucionesService(
             .FirstOrDefaultAsync(d => d.DevolucionId == devolucionId);
     }
 
-    public async Task<List<Devoluciones>> GetList(Expression<Func<Devoluciones, bool>> criterio)
+    public async Task<Result<List<Devoluciones>>> GetList(Expression<Func<Devoluciones, bool>> criterio)
     {
         await using var contexto = await contextFactory.CreateDbContextAsync();
         return await contexto.Devoluciones
@@ -103,21 +113,21 @@ public class DevolucionesService(
             .ToListAsync();
     }
 
-    public async Task<bool> Eliminar(int devolucionId)
+    public async Task<Result> Eliminar(int devolucionId)
     {
         await using var contexto = await contextFactory.CreateDbContextAsync();
         var devolucion = await contexto.Devoluciones
             .FirstOrDefaultAsync(d => d.DevolucionId == devolucionId);
         if (devolucion == null)
         {
-            return false;
+            return Result.Success(false);
         }
 
         var prestamo = await contexto.Prestamos
             .FirstOrDefaultAsync(p => p.PrestamoId == devolucion.PrestamoId);
         if (prestamo == null)
         {
-            return false;
+            return Result.Success(false);
         }
 
         var otroPrestamoActivo = await contexto.Prestamos
@@ -126,11 +136,12 @@ public class DevolucionesService(
                 && p.PrestamoId != prestamo.PrestamoId);
         if (otroPrestamoActivo)
         {
-            return false;
+            return Result.Success(false);
         }
 
         prestamo.Devuelto = false;
         contexto.Devoluciones.Remove(devolucion);
-        return await contexto.SaveChangesAsync() > 0;
+        var eliminado = await contexto.SaveChangesAsync() > 0;
+        return Result.Success(eliminado);
     }
 }

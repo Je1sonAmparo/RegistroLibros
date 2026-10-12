@@ -60,23 +60,32 @@
     {
         Estudiante.Nombres = Estudiante.Nombres?.Trim();
 
-        var nombreExiste = await estudianteService.GetList(e => e.Nombres!.ToLower() == Estudiante.Nombres!.ToLower());
-        
-        if (nombreExiste.Any())
+        var nombreExisteResult = await estudianteService.GetList(e => e.Nombres!.ToLower() == Estudiante.Nombres!.ToLower());
+        var nombreExiste = false;
+        var consultaFallida = false;
+        nombreExisteResult.OnSuccess(estudiantes => nombreExiste = estudiantes.Any());
+        nombreExisteResult.OnFailure(() =>
+        {
+            consultaFallida = true;
+            toastService.ShowError("No se pudo validar el nombre del estudiante.");
+        });
+        if (consultaFallida)
+        {
+            return;
+        }
+
+        if (nombreExiste)
         {
             toastService.ShowError("Ya existe un estudiante registrado con este nombre.");
             return; 
         }
 
-        var creado = await estudianteService.Guardar(Estudiante);
-        if (creado)
+        var creadoResult = await estudianteService.Guardar(Estudiante);
+        creadoResult.OnSuccess(() =>
         {
             toastService.ShowSuccess("Estudiante guardado correctamente.");
             navigationManager.NavigateTo("/Estudiante/Index");
-        }
-        else
-        {
-            toastService.ShowError("No se pudo guardar el estudiante.");
-        }
+        });
+        creadoResult.OnFailure(() => toastService.ShowError("No se pudo guardar el estudiante."));
     }
 }

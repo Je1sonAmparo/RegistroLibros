@@ -80,53 +80,66 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Devolucion = await devolucionesService.Buscar(DevolucionId) ?? new Devoluciones();
-        ListaPrestamos = await prestamosService.GetList(p => !p.Devuelto || p.PrestamoId == Devolucion.PrestamoId);
+        var result = await devolucionesService.Buscar(DevolucionId);
+        result.OnSuccess(devolucion => Devolucion = devolucion ?? new Devoluciones());
+
+        var prestamosResult = await prestamosService.GetList(p => !p.Devuelto || p.PrestamoId == Devolucion.PrestamoId);
+        prestamosResult.OnSuccess(prestamos => ListaPrestamos = prestamos);
     }
 
     public async Task Modificar()
     {
-        var modificado = await devolucionesService.Guardar(Devolucion);
-
-        if (modificado)
+        var result = await devolucionesService.Guardar(Devolucion);
+        result.OnSuccess(() =>
         {
-            toastService.ShowSuccess("Devolución modificada correctamente.");
+            toastService.ShowSuccess("Se ha modificado correctamente");
             navigationManager.NavigateTo("/Devolucion/Index");
-        }
-        else
-        {
-            toastService.ShowError("No se pudo modificar la devolución.");
-        }
+        });
+        result.OnFailure(() => toastService.ShowError("No se ha podido modificar"));
     }
 
     private async Task Eliminar()
     {
-        var devolucion = await devolucionesService.Buscar(DevolucionId);
-        if (devolucion?.Prestamo == null)
+        var devolucionResult = await devolucionesService.Buscar(DevolucionId);
+        Devoluciones? devolucion = null;
+        devolucionResult.OnSuccess(resultado => devolucion = resultado);
+        if (devolucionResult.IsFailure)
+        {
+            toastService.ShowError("No se pudo buscar la devolución.");
+            return;
+        }
+
+        if (devolucion == null || devolucion.Prestamo == null)
         {
             toastService.ShowError("No se encontró el préstamo asociado a la devolución.");
             return;
         }
 
-        var otroPrestamoActivo = await prestamosService.GetList(p =>
-            p.LibroId == devolucion.Prestamo.LibroId
+        var prestamo = devolucion.Prestamo;
+        var otroPrestamoActivoResult = await prestamosService.GetList(p =>
+            p.LibroId == prestamo.LibroId
             && !p.Devuelto
             && p.PrestamoId != devolucion.PrestamoId);
-        if (otroPrestamoActivo.Any())
+        var tieneOtroPrestamoActivo = false;
+        otroPrestamoActivoResult.OnSuccess(prestamos => tieneOtroPrestamoActivo = prestamos.Any());
+        if (otroPrestamoActivoResult.IsFailure)
+        {
+            toastService.ShowError("No se pudieron consultar los préstamos activos del libro.");
+            return;
+        }
+
+        if (tieneOtroPrestamoActivo)
         {
             toastService.ShowError("No se puede eliminar la devolución porque el libro ya tiene otro préstamo activo.");
             return;
         }
 
-        var eliminado = await devolucionesService.Eliminar(DevolucionId);
-        if (eliminado)
+        var result = await devolucionesService.Eliminar(DevolucionId);
+        result.OnSuccess(() =>
         {
             toastService.ShowSuccess("Devolución eliminada correctamente.");
             navigationManager.NavigateTo("/Devolucion/Index");
-        }
-        else
-        {
-            toastService.ShowError("No se pudo eliminar la devolución.");
-        }
+        });
+        result.OnFailure(() => toastService.ShowError("No se pudo eliminar correctamente"));
     }
 }

@@ -91,7 +91,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        ListaPrestamos = await prestamosService.GetList(p => !p.Devuelto);
+        var prestamosResult = await prestamosService.GetList(p => !p.Devuelto);
+        prestamosResult.OnSuccess(prestamos => ListaPrestamos = prestamos);
     }
 
     private async Task Buscar()
@@ -100,30 +101,32 @@
         {
             if (Filtro == "Estudiante")
             {
-                ListaPrestamos = await prestamosService.GetList(p => p.Estudiante!.Nombres!.ToLower().Contains(ValorFiltro.ToLower()));
+                var prestamosResult = await prestamosService.GetList(p => p.Estudiante!.Nombres!.ToLower().Contains(ValorFiltro.ToLower()));
+                prestamosResult.OnSuccess(prestamos => ListaPrestamos = prestamos);
             }
             else if (Filtro == "Libro")
             {
-                ListaPrestamos = await prestamosService.GetList(p => p.Libro!.Titulo!.ToLower().Contains(ValorFiltro.ToLower()));
+                var prestamosResult = await prestamosService.GetList(p => p.Libro!.Titulo!.ToLower().Contains(ValorFiltro.ToLower()));
+                prestamosResult.OnSuccess(prestamos => ListaPrestamos = prestamos);
             }
         }
         else
-            ListaPrestamos = await prestamosService.GetList(p => true);
+        {
+            var prestamosResult = await prestamosService.GetList(p => true);
+            prestamosResult.OnSuccess(prestamos => ListaPrestamos = prestamos);
+        }
     }
 
     private int prestamoIdAEliminar;
 
     private async Task Eliminar()
     {
-        var eliminado = await prestamosService.Eliminar(prestamoIdAEliminar);
-        if (eliminado)
+        var result = await prestamosService.Eliminar(prestamoIdAEliminar);
+        result.OnSuccess(() => toastService.ShowSuccess("Préstamo eliminado correctamente."));
+        result.OnFailure(() => toastService.ShowError("No se pudo eliminar correctamente"));
+        if (result.IsSuccess)
         {
-            toastService.ShowSuccess("Préstamo eliminado correctamente.");
             await Buscar();
-        }
-        else
-        {
-            toastService.ShowError("No se pudo eliminar el préstamo.");
         }
     }
 }

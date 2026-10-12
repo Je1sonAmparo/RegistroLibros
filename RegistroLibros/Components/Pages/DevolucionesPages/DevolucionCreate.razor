@@ -54,20 +54,18 @@
 
     protected override async Task OnInitializedAsync()
     {
-        ListaPrestamos = await prestamosService.GetList(p => !p.Devuelto);
+        var prestamosResult = await prestamosService.GetList(p => !p.Devuelto);
+        prestamosResult.OnSuccess(prestamos => ListaPrestamos = prestamos);
     }
 
     public async Task Guardar()
     {
-        var creado = await devolucionesService.Guardar(Devolucion);
-        if (creado)
+        var creadoResult = await devolucionesService.Guardar(Devolucion);
+        creadoResult.OnSuccess(() =>
         {
             toastService.ShowSuccess("Devolución guardada correctamente.");
             navigationManager.NavigateTo("/Devolucion/Index");
-        }
-        else
-        {
-            toastService.ShowError("No se pudo guardar la devolución.");
-        }
+        });
+        creadoResult.OnFailure(() => toastService.ShowError("No se pudo guardar la devolución."));
     }
 }

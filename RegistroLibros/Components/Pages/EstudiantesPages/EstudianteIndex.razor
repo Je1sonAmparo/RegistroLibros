@@ -89,7 +89,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        ListaEstudiantes = await estudianteService.GetList(p => true);
+        var estudiantesResult = await estudianteService.GetList(p => true);
+        estudiantesResult.OnSuccess(estudiantes => ListaEstudiantes = estudiantes);
     }
 
     private async Task Buscar()
@@ -98,33 +99,42 @@
         {
             if (Filtro == "Nombres")
             {
-                ListaEstudiantes = await estudianteService.GetList(p => p.Nombres!.ToLower().Contains(ValorFiltro.ToLower()));
+                var estudiantesResult = await estudianteService.GetList(p => p.Nombres!.ToLower().Contains(ValorFiltro.ToLower()));
+                estudiantesResult.OnSuccess(estudiantes => ListaEstudiantes = estudiantes);
             }
         }
         else
-            ListaEstudiantes = await estudianteService.GetList(p => true);
+        {
+            var estudiantesResult = await estudianteService.GetList(p => true);
+            estudiantesResult.OnSuccess(estudiantes => ListaEstudiantes = estudiantes);
+        }
     }
 
     private int estudianteIdAEliminar;
 
     private async Task Eliminar()
     {
-        var prestamos = await prestamosService.GetList(p => p.EstudianteId == estudianteIdAEliminar);
-        if (prestamos.Any())
+        var prestamosResult = await prestamosService.GetList(p => p.EstudianteId == estudianteIdAEliminar);
+        var tienePrestamos = false;
+        prestamosResult.OnSuccess(prestamos => tienePrestamos = prestamos.Any());
+        if (prestamosResult.IsFailure)
+        {
+            toastService.ShowError("No se pudieron consultar los préstamos del estudiante.");
+            return;
+        }
+
+        if (tienePrestamos)
         {
             toastService.ShowError("No se puede eliminar el estudiante porque tiene préstamos registrados.");
             return;
         }
 
-        var eliminado = await estudianteService.Eliminar(estudianteIdAEliminar);
-        if (eliminado)
+        var result = await estudianteService.Eliminar(estudianteIdAEliminar);
+        result.OnSuccess(() => toastService.ShowSuccess("Estudiante eliminado correctamente."));
+        result.OnFailure(() => toastService.ShowError("No se pudo eliminar correctamente"));
+        if (result.IsSuccess)
         {
-            toastService.ShowSuccess("Estudiante eliminado correctamente.");
             await Buscar();
-        }
-        else
-        {
-            toastService.ShowError("No se pudo eliminar el estudiante.");
         }
     }
 }

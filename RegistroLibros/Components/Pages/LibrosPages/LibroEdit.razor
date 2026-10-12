@@ -78,53 +78,63 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Libro = await librosService.Buscar(LibroId) ?? new Libros();
+        var result = await librosService.Buscar(LibroId);
+        result.OnSuccess(libro => Libro = libro ?? new Libros());
     }
 
     public async Task Modificar()
     {
         Libro.Titulo = Libro.Titulo?.Trim();
 
-        var tituloExiste = await librosService.GetList(l => l.Titulo!.ToLower() == Libro.Titulo!.ToLower() && l.LibroId != Libro.LibroId);
+        var tituloExisteResult = await librosService.GetList(l => l.Titulo!.ToLower() == Libro.Titulo!.ToLower() && l.LibroId != Libro.LibroId);
+        var tituloExiste = false;
+        tituloExisteResult.OnSuccess(libros => tituloExiste = libros.Any());
 
-        if (tituloExiste.Any())
+        if (tituloExisteResult.IsFailure)
+        {
+            toastService.ShowError("No se pudo validar el título del libro.");
+            return;
+        }
+
+        if (tituloExiste)
         {
             toastService.ShowError("Ya existe otro libro registrado con este título.");
             return;
         }
 
-        var modificado = await librosService.Guardar(Libro);
-
-        if (modificado)
+        var result = await librosService.Guardar(Libro);
+        result.OnSuccess(() =>
         {
-            toastService.ShowSuccess("Se ha modificado correctamente.");
+            toastService.ShowSuccess("Se ha modificado correctamente");
             navigationManager.NavigateTo("/Libro/Index");
-        }
-        else
-        {
-            toastService.ShowError("No se ha podido modificar correctamente.");
-        }
+        });
+        result.OnFailure(() => toastService.ShowError("No se ha podido modificar"));
     }
 
     private async Task Eliminar()
     {
-        var prestamosActivos = await prestamosService.GetList(p =>
+        var prestamosActivosResult = await prestamosService.GetList(p =>
             p.LibroId == LibroId && !p.Devuelto);
-        if (prestamosActivos.Any())
+        var tienePrestamosActivos = false;
+        prestamosActivosResult.OnSuccess(prestamos => tienePrestamosActivos = prestamos.Any());
+        if (prestamosActivosResult.IsFailure)
+        {
+            toastService.ShowError("No se pudieron consultar los préstamos activos del libro.");
+            return;
+        }
+
+        if (tienePrestamosActivos)
         {
             toastService.ShowError("No se puede eliminar el libro porque está prestado actualmente.");
             return;
         }
 
-        var eliminado = await librosService.Eliminar(LibroId);
-        if (eliminado)
+        var result = await librosService.Eliminar(LibroId);
+        result.OnSuccess(() =>
         {
             toastService.ShowSuccess("Libro eliminado correctamente.");
             navigationManager.NavigateTo("/Libro/Index");
-        }
-        else
-        {
-            toastService.ShowError("No se pudo eliminar el libro.");
-        }
+        });
+        result.OnFailure(() => toastService.ShowError("No se pudo eliminar correctamente"));
     }
 }
