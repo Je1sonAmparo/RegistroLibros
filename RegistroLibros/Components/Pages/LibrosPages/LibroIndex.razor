@@ -1,6 +1,7 @@
 @page "/Libro/Index"
 
 @inject LibrosService librosService
+@inject DevolucionesService devolucionesService
 @inject ToastService toastService
 
 <PageTitle>Registro de Libros</PageTitle>
@@ -46,6 +47,9 @@
                     <PropertyColumn Property="@(l => l.Titulo)" Title="Título" Sortable="true" />
                     <PropertyColumn Property="@(l => l.Autor)" Title="Autor" Sortable="true" />
                     <PropertyColumn Property="@(l => l.AnoPublicacion)" Title="Año de Publicación" Sortable="true" />
+                    <TemplateColumn Title="Promedio de días prestado">
+                        @ObtenerPromedioDiasPrestado(context.LibroId).ToString("N2")
+                    </TemplateColumn>
                     <TemplateColumn Title="Opciones" Align="Align.Center">
                         <div class="d-flex text-nowrap">
                             <a href="/Libro/Edit/@context.LibroId" class="btn btn-outline-primary bi bi-pencil-square"></a>
@@ -84,10 +88,21 @@
     public List<Libros> ListaLibros { get; set; } = new List<Libros>();
     public string Filtro { get; set; } = string.Empty;
     public string ValorFiltro { get; set; } = string.Empty;
+    private List<Devoluciones> ListaDevoluciones { get; set; } = [];
 
     protected override async Task OnInitializedAsync()
     {
         ListaLibros = await librosService.GetList(p => true);
+        ListaDevoluciones = await devolucionesService.GetList(d => true);
+    }
+
+    private double ObtenerPromedioDiasPrestado(int libroId)
+    {
+        return ListaDevoluciones
+            .Where(d => d.Prestamo != null && d.Prestamo.LibroId == libroId)
+            .Select(d => (d.FechaDevolucion - d.Prestamo!.FechaPrestamo).Days)
+            .DefaultIfEmpty(0)
+            .Average();
     }
 
     private async Task Buscar()
@@ -104,7 +119,11 @@
             }
         }
         else
+        {
             ListaLibros = await librosService.GetList(p => true);
+        }
+
+        ListaDevoluciones = await devolucionesService.GetList(d => true);
     }
 
     private int libroIdAEliminar;
