@@ -17,6 +17,8 @@ public class Libros
     [Required(ErrorMessage = "Debe ingresar un año de publicacion")]
     public int? AnoPublicacion { get; set; }
 
+    public int CantidadDisponible { get; set; }
+
     [InverseProperty("Libro")]
     public virtual ICollection<Prestamos> Prestamos { get; set; } = new List<Prestamos>();
 }

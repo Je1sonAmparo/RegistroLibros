@@ -1,0 +1,73 @@
+@page "/Devolucion/Create"
+
+@inject DevolucionesService devolucionesService
+@inject PrestamosService prestamosService
+@inject NavigationManager navigationManager
+@inject ToastService toastService
+
+<PageTitle>Crear Devolución</PageTitle>
+<EditForm Model="Devolucion" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header text-center">
+                <h5 class="card-title">Crear Devolución</h5>
+            </div>
+
+            <div class="card-body">
+                
+                @* Préstamo *@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Préstamo</strong></label>
+                    <InputSelect class="form-control form-select" @bind-Value="Devolucion.PrestamoId">
+                        <option value="0" selected disabled>Elija un Préstamo</option>
+                        @foreach (var prestamo in ListaPrestamos)
+                        {
+                            <option value="@prestamo.PrestamoId">#@prestamo.PrestamoId - @prestamo.Estudiante?.Nombres (@prestamo.Libro?.Titulo)</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="(() => Devolucion.PrestamoId)" />
+                </div>
+
+                @* Fecha de Devolución *@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Fecha de Devolución</strong></label>
+                    <InputDate class="form-control" @bind-Value="Devolucion.FechaDevolucion"></InputDate>
+                    <ValidationMessage For="(() => Devolucion.FechaDevolucion)" />
+                </div>
+
+            </div>
+
+            @* Botones de Acción *@
+            <div class="card-footer text-center mt-2">
+                <a href="/Devolucion/Index" class="btn btn-secondary"> <span class="bi bi-arrow-left"></span> Volver</a>
+                <button type="submit" class="btn btn-primary bi bi-floppy"> Guardar</button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    public Devoluciones Devolucion { get; set; } = new Devoluciones();
+    public List<Prestamos> ListaPrestamos { get; set; } = new List<Prestamos>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        ListaPrestamos = await prestamosService.GetList(p => !p.Devuelto);
+    }
+
+    public async Task Guardar()
+    {
+        var creado = await devolucionesService.Guardar(Devolucion);
+        if (creado)
+        {
+            toastService.ShowSuccess("Devolución guardada correctamente.");
+            navigationManager.NavigateTo("/Devolucion/Index");
+        }
+        else
+        {
+            toastService.ShowError("No se pudo guardar la devolución.");
+        }
+    }
+}

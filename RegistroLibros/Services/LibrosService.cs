@@ -63,6 +63,13 @@ public class LibrosService(
     public async Task<bool> Eliminar(int libroId)
     {
         await using var contexto = await contextFactory.CreateDbContextAsync();
+        var prestamoActivo = await contexto.Prestamos
+            .AnyAsync(p => p.LibroId == libroId && !p.Devuelto);
+        if (prestamoActivo)
+        {
+            return false;
+        }
+
         return await contexto.Libros
             .Where(p => p.LibroId == libroId)
             .ExecuteDeleteAsync() > 0;

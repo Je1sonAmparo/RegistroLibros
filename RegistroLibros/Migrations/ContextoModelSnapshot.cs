@@ -22,6 +22,27 @@ namespace RegistroLibros.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("RegistroLibros.Models.Devoluciones", b =>
+                {
+                    b.Property<int>("DevolucionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DevolucionId"));
+
+                    b.Property<DateTime>("FechaDevolucion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PrestamoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("DevolucionId");
+
+                    b.HasIndex("PrestamoId");
+
+                    b.ToTable("Devoluciones");
+                });
+
             modelBuilder.Entity("RegistroLibros.Models.Estudiantes", b =>
                 {
                     b.Property<int>("EstudianteId")
@@ -65,6 +86,9 @@ namespace RegistroLibros.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("CantidadDisponible")
+                        .HasColumnType("int");
+
                     b.Property<string>("Titulo")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -88,9 +112,6 @@ namespace RegistroLibros.Migrations
                     b.Property<int>("EstudianteId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("FechaDevolucion")
-                        .HasColumnType("datetime2");
-
                     b.Property<DateTime>("FechaPrestamo")
                         .HasColumnType("datetime2");
 
@@ -104,6 +125,17 @@ namespace RegistroLibros.Migrations
                     b.HasIndex("LibroId");
 
                     b.ToTable("Prestamos");
+                });
+
+            modelBuilder.Entity("RegistroLibros.Models.Devoluciones", b =>
+                {
+                    b.HasOne("RegistroLibros.Models.Prestamos", "Prestamo")
+                        .WithMany()
+                        .HasForeignKey("PrestamoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Prestamo");
                 });
 
             modelBuilder.Entity("RegistroLibros.Models.Prestamos", b =>

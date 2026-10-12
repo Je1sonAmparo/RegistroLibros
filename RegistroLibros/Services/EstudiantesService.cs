@@ -63,6 +63,13 @@ public class EstudiantesService(
     public async Task<bool> Eliminar(int estudianteId)
     {
         await using var contexto = await contextFactory.CreateDbContextAsync();
+        var tienePrestamos = await contexto.Prestamos
+            .AnyAsync(p => p.EstudianteId == estudianteId);
+        if (tienePrestamos)
+        {
+            return false;
+        }
+
         return await contexto.Estudiantes
             .Where(p => p.EstudianteId == estudianteId)
             .ExecuteDeleteAsync() > 0;
