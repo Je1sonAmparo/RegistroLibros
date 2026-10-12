@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Aplicada1.Core;
+using Microsoft.EntityFrameworkCore;
 using RegistroLibros.Context;
 using RegistroLibros.Models;
 using System.Linq.Expressions;
@@ -7,18 +8,20 @@ namespace RegistroLibros.Services;
 
 public class LibrosService(
     IDbContextFactory<Contexto> contextFactory
-    ) : Aplicada1.Core.IService<Libros, int>
+    ) : IServiceResult<Libros, int>
 {
 
-    public async Task<bool> Guardar(Libros libro)
+    public async Task<Result> Guardar(Libros libro)
     {
         if (!await Existe(libro.LibroId))
         {
-            return await Insertar(libro);
+            var inserto = await Insertar(libro);
+            return Result.Success(inserto);
         }
         else
         {
-            return await Modificar(libro);
+            var modifico = await Modificar(libro);
+            return Result.Success(modifico);
         }
     }
 
@@ -44,14 +47,14 @@ public class LibrosService(
             .SaveChangesAsync() > 0;
     }
 
-    public async Task<Libros?> Buscar(int libroId)
+    public async Task<Result<Libros?>> Buscar(int libroId)
     {
         await using var contexto = await contextFactory.CreateDbContextAsync();
         return await contexto.Libros
             .FirstOrDefaultAsync(p => p.LibroId == libroId);
     }
 
-    public async Task<List<Libros>> GetList(Expression<Func<Libros, bool>> criterio)
+    public async Task<Result<List<Libros>>> GetList(Expression<Func<Libros, bool>> criterio)
     {
         await using var contexto = await contextFactory.CreateDbContextAsync();
         return await contexto.Libros
@@ -60,18 +63,19 @@ public class LibrosService(
             .ToListAsync();
     }
 
-    public async Task<bool> Eliminar(int libroId)
+    public async Task<Result> Eliminar(int libroId)
     {
         await using var contexto = await contextFactory.CreateDbContextAsync();
         var prestamoActivo = await contexto.Prestamos
             .AnyAsync(p => p.LibroId == libroId && !p.Devuelto);
         if (prestamoActivo)
         {
-            return false;
+            return Result.Success(false);
         }
 
-        return await contexto.Libros
+        var eliminado = await contexto.Libros
             .Where(p => p.LibroId == libroId)
             .ExecuteDeleteAsync() > 0;
+        return Result.Success(eliminado);
     }
 }
