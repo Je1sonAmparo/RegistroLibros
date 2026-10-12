@@ -1,3 +1,4 @@
+using Aplicada1.Core;
 using Microsoft.EntityFrameworkCore;
 using RegistroLibros.Context;
 using RegistroLibros.Models;
@@ -7,18 +8,20 @@ namespace RegistroLibros.Services;
 
 public class PrestamosService(
     IDbContextFactory<Contexto> contextFactory
-    ) : Aplicada1.Core.IService<Prestamos, int>
+    ) : IServiceResult<Prestamos, int>
 {
 
-    public async Task<bool> Guardar(Prestamos prestamo)
+    public async Task<Result> Guardar(Prestamos prestamo)
     {
         if (!await Existe(prestamo.PrestamoId))
         {
-            return await Insertar(prestamo);
+            var inserto = await Insertar(prestamo);
+            return Result.Success(inserto);
         }
         else
         {
-            return await Modificar(prestamo);
+            var modifico = await Modificar(prestamo);
+            return Result.Success(modifico);
         }
     }
 
@@ -43,7 +46,7 @@ public class PrestamosService(
         return await contexto.SaveChangesAsync() > 0;
     }
 
-    public async Task<Prestamos?> Buscar(int prestamoId)
+    public async Task<Result<Prestamos?>> Buscar(int prestamoId)
     {
         await using var contexto = await contextFactory.CreateDbContextAsync();
         return await contexto.Prestamos
@@ -52,7 +55,7 @@ public class PrestamosService(
             .FirstOrDefaultAsync(p => p.PrestamoId == prestamoId);
     }
 
-    public async Task<List<Prestamos>> GetList(Expression<Func<Prestamos, bool>> criterio)
+    public async Task<Result<List<Prestamos>>> GetList(Expression<Func<Prestamos, bool>> criterio)
     {
         await using var contexto = await contextFactory.CreateDbContextAsync();
         return await contexto.Prestamos
@@ -63,11 +66,12 @@ public class PrestamosService(
             .ToListAsync();
     }
 
-    public async Task<bool> Eliminar(int prestamoId)
+    public async Task<Result> Eliminar(int prestamoId)
     {
         await using var contexto = await contextFactory.CreateDbContextAsync();
-        return await contexto.Prestamos
+        var eliminado = await contexto.Prestamos
             .Where(p => p.PrestamoId == prestamoId)
             .ExecuteDeleteAsync() > 0;
+        return Result.Success(eliminado);
     }
 }
