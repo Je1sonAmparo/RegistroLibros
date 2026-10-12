@@ -62,13 +62,6 @@
         var creado = await devolucionesService.Guardar(Devolucion);
         if (creado)
         {
-            var prestamo = await prestamosService.Buscar(Devolucion.PrestamoId);
-            if (prestamo != null)
-            {
-                prestamo.Devuelto = true;
-                await prestamosService.Guardar(prestamo);
-            }
-
             toastService.ShowSuccess("Devolución guardada correctamente.");
             navigationManager.NavigateTo("/Devolucion/Index");
         }

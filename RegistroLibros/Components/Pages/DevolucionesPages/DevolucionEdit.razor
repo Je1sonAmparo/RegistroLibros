@@ -5,14 +5,15 @@
 @inject NavigationManager navigationManager
 @inject ToastService toastService
 
-<PageTitle>Editar Devolución</PageTitle>
+<PageTitle>Modificar Devolución</PageTitle>
 <EditForm Model="Devolucion" OnValidSubmit="Modificar">
     <DataAnnotationsValidator />
+    <ValidationSummary />
 
     <div class="container">
         <div class="card shadow-lg">
             <div class="card-header text-center">
-                <h5 class="card-title">Editar Devolución</h5>
+                <h5 class="card-title">Modificar Devolución</h5>
             </div>
 
             <div class="card-body">
@@ -41,7 +42,9 @@
 
             @* Botones de Acción *@
             <div class="card-footer text-center mt-2">
-                <a href="/Devolucion/Index" class="btn btn-secondary"> <span class="bi bi-arrow-left"></span> Volver</a>
+                <a href="/Devolucion/Index" class="btn btn-secondary">
+                    <span class="bi bi-arrow-left"></span> Volver
+                </a>
                 <button type="submit" class="btn btn-primary bi bi-floppy"> Modificar</button>
                 <button type="button" class="btn btn-danger bi bi-trash" data-bs-toggle="modal" data-bs-target="#modalEliminarDevolucion"> Eliminar</button>
             </div>
@@ -51,28 +54,29 @@
 
 @* Modal de eliminación *@
 <div class="modal fade" id="modalEliminarDevolucion" tabindex="-1" aria-labelledby="modalEliminarDevolucionLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="modalEliminarDevolucionLabel">Eliminar Devolución</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        ¿Estás seguro de que deseas eliminar esta devolución?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" @onclick="Eliminar">Sí, eliminar</button>
-      </div>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="modalEliminarDevolucionLabel">Eliminar Devolución</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de que deseas eliminar esta devolución?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" @onclick="Eliminar">Sí, eliminar</button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 @code {
     [Parameter]
     public int DevolucionId { get; set; }
+
     public Devoluciones Devolucion { get; set; } = new Devoluciones();
-    public List<Prestamos> ListaPrestamos { get; set; } = new List<Prestamos>();
+    public List<Prestamos> ListaPrestamos { get; set; } = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -82,29 +86,10 @@
 
     public async Task Modificar()
     {
-        var anterior = await devolucionesService.Buscar(Devolucion.DevolucionId);
-        int prestamoAnteriorId = anterior?.PrestamoId ?? 0;
-
         var modificado = await devolucionesService.Guardar(Devolucion);
+
         if (modificado)
         {
-            if (prestamoAnteriorId != 0 && prestamoAnteriorId != Devolucion.PrestamoId)
-            {
-                var prestamoAnterior = await prestamosService.Buscar(prestamoAnteriorId);
-                if (prestamoAnterior != null)
-                {
-                    prestamoAnterior.Devuelto = false;
-                    await prestamosService.Guardar(prestamoAnterior);
-                }
-            }
-
-            var prestamoActual = await prestamosService.Buscar(Devolucion.PrestamoId);
-            if (prestamoActual != null)
-            {
-                prestamoActual.Devuelto = true;
-                await prestamosService.Guardar(prestamoActual);
-            }
-
             toastService.ShowSuccess("Devolución modificada correctamente.");
             navigationManager.NavigateTo("/Devolucion/Index");
         }
@@ -116,17 +101,9 @@
 
     private async Task Eliminar()
     {
-        var prestamoId = Devolucion.PrestamoId;
         var eliminado = await devolucionesService.Eliminar(DevolucionId);
         if (eliminado)
         {
-            var prestamo = await prestamosService.Buscar(prestamoId);
-            if (prestamo != null)
-            {
-                prestamo.Devuelto = false;
-                await prestamosService.Guardar(prestamo);
-            }
-
             toastService.ShowSuccess("Devolución eliminada correctamente.");
             navigationManager.NavigateTo("/Devolucion/Index");
         }
