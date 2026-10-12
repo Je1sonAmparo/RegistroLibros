@@ -103,7 +103,11 @@
         }
 
         var result = await librosService.Guardar(Libro);
-        result.OnSuccess(() => toastService.ShowSuccess("Se ha modificado correctamente"));
+        result.OnSuccess(() =>
+        {
+            toastService.ShowSuccess("Se ha modificado correctamente");
+            navigationManager.NavigateTo("/Libro/Index");
+        });
         result.OnFailure(() => toastService.ShowError("No se ha podido modificar"));
     }
 

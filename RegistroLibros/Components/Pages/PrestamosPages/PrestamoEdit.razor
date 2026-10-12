@@ -133,7 +133,11 @@
         }
 
         var result = await prestamosService.Guardar(Prestamo);
-        result.OnSuccess(() => toastService.ShowSuccess("Se ha modificado correctamente"));
+        result.OnSuccess(() =>
+        {
+            toastService.ShowSuccess("Se ha modificado correctamente");
+            navigationManager.NavigateTo("/Prestamo/Index");
+        });
         result.OnFailure(() => toastService.ShowError("No se ha podido modificar"));
     }
 

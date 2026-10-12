@@ -110,7 +110,11 @@
         }
 
         var result = await estudianteService.Guardar(Estudiante);
-        result.OnSuccess(() => toastService.ShowSuccess("Se ha modificado correctamente."));
+        result.OnSuccess(() =>
+        {
+            toastService.ShowSuccess("Se ha modificado correctamente.");
+            navigationManager.NavigateTo("/Estudiante/Index");
+        });
         result.OnFailure(() => toastService.ShowError("No se ha podido modificar"));
     }
 

@@ -90,7 +90,11 @@
     public async Task Modificar()
     {
         var result = await devolucionesService.Guardar(Devolucion);
-        result.OnSuccess(() => toastService.ShowSuccess("Se ha modificado correctamente"));
+        result.OnSuccess(() =>
+        {
+            toastService.ShowSuccess("Se ha modificado correctamente");
+            navigationManager.NavigateTo("/Devolucion/Index");
+        });
         result.OnFailure(() => toastService.ShowError("No se ha podido modificar"));
     }
 
@@ -105,12 +109,13 @@
             return;
         }
 
-        if (devolucion?.Prestamo is not { } prestamo)
+        if (devolucion == null || devolucion.Prestamo == null)
         {
             toastService.ShowError("No se encontró el préstamo asociado a la devolución.");
             return;
         }
 
+        var prestamo = devolucion.Prestamo;
         var otroPrestamoActivoResult = await prestamosService.GetList(p =>
             p.LibroId == prestamo.LibroId
             && !p.Devuelto
