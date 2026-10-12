@@ -53,23 +53,32 @@
     {
         Libro.Titulo = Libro.Titulo?.Trim();
 
-        var tituloExiste = await librosService.GetList(l => l.Titulo!.ToLower() == Libro.Titulo!.ToLower());
-        
-        if (tituloExiste.Any())
+        var tituloExisteResult = await librosService.GetList(l => l.Titulo!.ToLower() == Libro.Titulo!.ToLower());
+        var tituloExiste = false;
+        var consultaFallida = false;
+        tituloExisteResult.OnSuccess(libros => tituloExiste = libros.Any());
+        tituloExisteResult.OnFailure(() =>
+        {
+            consultaFallida = true;
+            toastService.ShowError("No se pudo validar el título del libro.");
+        });
+        if (consultaFallida)
+        {
+            return;
+        }
+
+        if (tituloExiste)
         {
             toastService.ShowError("Ya existe un libro registrado con este título.");
             return; 
         }
 
-        var creado = await librosService.Guardar(Libro);
-        if (creado)
+        var creadoResult = await librosService.Guardar(Libro);
+        creadoResult.OnSuccess(() =>
         {
             toastService.ShowSuccess("Libro guardado correctamente.");
             navigationManager.NavigateTo("/Libro/Index");
-        }
-        else
-        {
-            toastService.ShowError("No se pudo guardar el libro.");
-        }
+        });
+        creadoResult.OnFailure(() => toastService.ShowError("No se pudo guardar el libro."));
     }
 }
