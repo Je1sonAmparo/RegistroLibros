@@ -1,6 +1,7 @@
 @page "/Estudiante/Index"
 
 @inject EstudiantesService estudianteService
+@inject PrestamosService prestamosService
 @inject ToastService toastService
 
 <PageTitle>Registro de Estudiantes</PageTitle>
@@ -108,6 +109,13 @@
 
     private async Task Eliminar()
     {
+        var prestamos = await prestamosService.GetList(p => p.EstudianteId == estudianteIdAEliminar);
+        if (prestamos.Any())
+        {
+            toastService.ShowError("No se puede eliminar el estudiante porque tiene préstamos registrados.");
+            return;
+        }
+
         var eliminado = await estudianteService.Eliminar(estudianteIdAEliminar);
         if (eliminado)
         {

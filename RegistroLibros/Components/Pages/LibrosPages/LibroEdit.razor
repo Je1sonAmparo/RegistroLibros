@@ -1,6 +1,7 @@
 @page "/Libro/Edit/{LibroId:int}"
 
 @inject LibrosService librosService
+@inject PrestamosService prestamosService
 @inject NavigationManager navigationManager
 @inject ToastService toastService
 
@@ -107,6 +108,14 @@
 
     private async Task Eliminar()
     {
+        var prestamosActivos = await prestamosService.GetList(p =>
+            p.LibroId == LibroId && !p.Devuelto);
+        if (prestamosActivos.Any())
+        {
+            toastService.ShowError("No se puede eliminar el libro porque está prestado actualmente.");
+            return;
+        }
+
         var eliminado = await librosService.Eliminar(LibroId);
         if (eliminado)
         {

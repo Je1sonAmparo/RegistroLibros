@@ -113,7 +113,23 @@ public class DevolucionesService(
             return false;
         }
 
-        await AfectarPrestamo(contexto, devolucion.PrestamoId, false);
+        var prestamo = await contexto.Prestamos
+            .FirstOrDefaultAsync(p => p.PrestamoId == devolucion.PrestamoId);
+        if (prestamo == null)
+        {
+            return false;
+        }
+
+        var otroPrestamoActivo = await contexto.Prestamos
+            .AnyAsync(p => p.LibroId == prestamo.LibroId
+                && !p.Devuelto
+                && p.PrestamoId != prestamo.PrestamoId);
+        if (otroPrestamoActivo)
+        {
+            return false;
+        }
+
+        prestamo.Devuelto = false;
         contexto.Devoluciones.Remove(devolucion);
         return await contexto.SaveChangesAsync() > 0;
     }

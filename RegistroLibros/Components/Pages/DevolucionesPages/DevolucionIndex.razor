@@ -1,6 +1,7 @@
 @page "/Devolucion/Index"
 
 @inject DevolucionesService devolucionesService
+@inject PrestamosService prestamosService
 @inject ToastService toastService
 
 <PageTitle>Registro de Devoluciones</PageTitle>
@@ -112,6 +113,23 @@
 
     private async Task Eliminar()
     {
+        var devolucion = await devolucionesService.Buscar(devolucionIdAEliminar);
+        if (devolucion?.Prestamo == null)
+        {
+            toastService.ShowError("No se encontró el préstamo asociado a la devolución.");
+            return;
+        }
+
+        var otroPrestamoActivo = await prestamosService.GetList(p =>
+            p.LibroId == devolucion.Prestamo.LibroId
+            && !p.Devuelto
+            && p.PrestamoId != devolucion.PrestamoId);
+        if (otroPrestamoActivo.Any())
+        {
+            toastService.ShowError("No se puede eliminar la devolución porque el libro ya tiene otro préstamo activo.");
+            return;
+        }
+
         var eliminado = await devolucionesService.Eliminar(devolucionIdAEliminar);
         if (eliminado)
         {
