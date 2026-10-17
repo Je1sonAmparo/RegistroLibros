@@ -83,27 +83,24 @@
 
     public Estudiantes Estudiante { get; set; } = new Estudiantes();
 
+    private string? NombreOriginal { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         var result = await estudianteService.Buscar(EstudianteId);
-        result.OnSuccess(estudiante => Estudiante = estudiante ?? new Estudiantes());
+        result.OnSuccess(estudiante =>
+        {
+            Estudiante = estudiante ?? new Estudiantes();
+            NombreOriginal = Estudiante.Nombres;
+        });
     }
 
     public async Task Modificar()
     {
         Estudiante.Nombres = Estudiante.Nombres?.Trim();
 
-        var nombreExisteResult = await estudianteService.GetList(e => e.Nombres!.ToLower() == Estudiante.Nombres!.ToLower() && e.EstudianteId != Estudiante.EstudianteId);
-        var nombreExiste = false;
-        nombreExisteResult.OnSuccess(estudiantes => nombreExiste = estudiantes.Any());
-
-        if (nombreExisteResult.IsFailure)
-        {
-            toastService.ShowError("No se pudo validar el nombre del estudiante.");
-            return;
-        }
-
-        if (nombreExiste)
+        var nombreCambio = Estudiante.Nombres?.ToLower() != NombreOriginal?.ToLower();
+        if (nombreCambio && await estudianteService.ExisteNombre(Estudiante.Nombres!.ToLower()))
         {
             toastService.ShowError("Ya existe otro estudiante registrado con este nombre.");
             return;

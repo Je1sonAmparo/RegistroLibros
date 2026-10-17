@@ -76,27 +76,24 @@
 
     public Libros Libro { get; set; } = new Libros();
 
+    private string? TituloOriginal { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         var result = await librosService.Buscar(LibroId);
-        result.OnSuccess(libro => Libro = libro ?? new Libros());
+        result.OnSuccess(libro =>
+        {
+            Libro = libro ?? new Libros();
+            TituloOriginal = Libro.Titulo;
+        });
     }
 
     public async Task Modificar()
     {
         Libro.Titulo = Libro.Titulo?.Trim();
 
-        var tituloExisteResult = await librosService.GetList(l => l.Titulo!.ToLower() == Libro.Titulo!.ToLower() && l.LibroId != Libro.LibroId);
-        var tituloExiste = false;
-        tituloExisteResult.OnSuccess(libros => tituloExiste = libros.Any());
-
-        if (tituloExisteResult.IsFailure)
-        {
-            toastService.ShowError("No se pudo validar el título del libro.");
-            return;
-        }
-
-        if (tituloExiste)
+        var tituloCambio = Libro.Titulo?.ToLower() != TituloOriginal?.ToLower();
+        if (tituloCambio && await librosService.ExisteTitulo(Libro.Titulo!.ToLower()))
         {
             toastService.ShowError("Ya existe otro libro registrado con este título.");
             return;
