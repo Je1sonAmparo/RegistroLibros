@@ -1,0 +1,110 @@
+@page "/Entrada/Index"
+
+@inject EntradasService entradasService
+@inject ToastService toastService
+
+<PageTitle>Registro de Entradas</PageTitle>
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header d-flex justify-content-between align-center mb-4">
+            <h5 class="card-title">Registro de Entradas</h5>
+            <a href="/Entrada/Create" class="btn btn-primary">
+                <span class="bi bi-plus-square mt-3"></span> Crear
+            </a>
+        </div>
+
+        <div class="card-body">
+            @* Filtro *@
+            <div class="row">
+                <div class="col-3">
+                    <label class="col-form-label"><strong>Filtrar por</strong></label>
+                </div>
+                <div class="col-4">
+                    <label class="col-form-label"><strong>Búsqueda</strong></label>
+                </div>
+            </div>
+
+            @* Controles de búsqueda *@
+            <div class="row align-items-center">
+                <div class="col-3">
+                    <InputSelect class="form-select" @bind-Value="Filtro">
+                        <option value="" selected disabled>Elija una opci&oacute;n</option>
+                        <option value="Fecha">Fecha</option>
+                        <option value="Total">Total</option>
+                    </InputSelect>
+                </div>
+                <div class="col-4">
+                    <div class="input-group">
+                        <input class="form-control" @bind="ValorFiltro" placeholder="Buscar" />
+                        <button type="button" class="btn btn-outline-primary bi bi-search" @onclick="Buscar"></button>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-3">
+                    <label class="col-form-label"><strong>Desde</strong></label>
+                    <InputDate class="form-control" @bind-Value="Desde"></InputDate>
+                </div>
+                <div class="col-3">
+                    <label class="col-form-label"><strong>Hasta</strong></label>
+                    <InputDate class="form-control" @bind-Value="Hasta"></InputDate>
+                </div>
+            </div>
+
+            @* Tabla *@
+            <div class="grid">
+                <QuickGrid Items="ListaEntradas.AsQueryable()" Class="table table-hover mt-3">
+                    <PropertyColumn Property="@(e => e.EntradaId)" Title="EntradaId" Sortable="true" />
+                    <PropertyColumn Property="@(e => e.Fecha)" Title="Fecha" Format="dd/MM/yyyy" Sortable="true" />
+                    <PropertyColumn Property="@(e => e.Concepto)" Title="Concepto" Sortable="true" />
+                    <PropertyColumn Property="@(e => e.Total)" Title="Total" Format="C2" Sortable="true" />
+                </QuickGrid>
+            </div>
+        </div>
+
+        <div class="card-footer d-flex justify-content-between align-center mb-4">
+            <label>Cantidad: @ListaEntradas.Count</label>
+        </div>
+    </div>
+</div>
+
+@code {
+    public List<Entradas> ListaEntradas { get; set; } = new List<Entradas>();
+    public string Filtro { get; set; } = string.Empty;
+    public string ValorFiltro { get; set; } = string.Empty;
+    public DateTime? Desde { get; set; }
+    public DateTime? Hasta { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var entradasResult = await entradasService.GetList(e => true);
+        entradasResult.OnSuccess(entradas => ListaEntradas = entradas);
+        Desde = null;
+        Hasta = null;
+    }
+
+    private async Task Buscar()
+    {
+        if (Filtro == "Fecha")
+        {
+            var entradasPorFechaResult = await entradasService.GetList(e =>
+                e.Fecha >= Desde && e.Fecha <= Hasta);
+            entradasPorFechaResult.OnSuccess(entradas => ListaEntradas = entradas);
+            entradasPorFechaResult.OnFailure(() =>
+                toastService.ShowError("No se pudieron consultar las entradas."));
+        }
+        else if (Filtro == "Total")
+        {
+            var total = Convert.ToDecimal(ValorFiltro);
+            var entradasPorTotalResult = await entradasService.GetList(e => e.Total == total);
+            entradasPorTotalResult.OnSuccess(entradas => ListaEntradas = entradas);
+            entradasPorTotalResult.OnFailure(() =>
+                toastService.ShowError("No se pudieron consultar las entradas."));
+        }
+        else
+        {
+            toastService.ShowError("Seleccione un filtro.");
+        }
+    }
+
+}
