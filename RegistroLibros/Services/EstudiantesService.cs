@@ -32,6 +32,13 @@ public class EstudiantesService(
             .AnyAsync(p => p.EstudianteId == estudianteId);
     }
 
+    public async Task<bool> ExisteNombre(string nombre)
+    {
+        await using var contexto = await contextFactory.CreateDbContextAsync();
+        return await contexto.Estudiantes
+            .AnyAsync(e => e.Nombres == nombre);
+    }
+
     private async Task<bool> Insertar(Estudiantes estudiante)
     {
         await using var contexto = await contextFactory.CreateDbContextAsync();
