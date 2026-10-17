@@ -53,15 +53,7 @@
     {
         Libro.Titulo = Libro.Titulo?.Trim();
 
-        var tituloExisteResult = await librosService.GetList(l =>
-            l.Titulo!.ToLower() == Libro.Titulo!.ToLower());
-        var tituloExiste = false;
-        tituloExisteResult.OnSuccess(libros => tituloExiste = libros.Any());
-        if (tituloExisteResult.IsFailure)
-        {
-            toastService.ShowError("No se pudo validar el título del libro.");
-            return;
-        }
+        var tituloExiste = await librosService.ExisteTitulo(Libro.Titulo!.ToLower());
 
         if (tituloExiste)
         {
