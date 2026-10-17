@@ -15,4 +15,6 @@ public class Entradas
 
     [Range(0.01, double.MaxValue, ErrorMessage = "El total debe ser mayor que cero")]
     public decimal Total { get; set; }
+
+    public virtual ICollection<EntradasDetalle> EntradasDetalle { get; set; } = new List<EntradasDetalle>();
 }
