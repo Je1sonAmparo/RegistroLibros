@@ -34,9 +34,10 @@ public class LibrosService(
 
     public async Task<bool> ExisteTitulo(string titulo)
     {
+        var tituloNormalizado = titulo.ToLower();
         await using var contexto = await contextFactory.CreateDbContextAsync();
         return await contexto.Libros
-            .AnyAsync(l => l.Titulo == titulo);
+            .AnyAsync(l => l.Titulo != null && l.Titulo.ToLower() == tituloNormalizado);
     }
 
     private async Task<bool> Insertar(Libros libro)
