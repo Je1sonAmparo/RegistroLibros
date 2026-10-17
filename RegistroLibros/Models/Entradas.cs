@@ -13,6 +13,6 @@ public class Entradas
     [Required(ErrorMessage = "Debe ingresar un concepto")]
     public string? Concepto { get; set; }
 
-    [Range(typeof(decimal), "0.01", "79228162514264337593543950335", ErrorMessage = "El total debe ser mayor que cero")]
+    [Range(0.01, double.MaxValue, ErrorMessage = "El total debe ser mayor que cero")]
     public decimal Total { get; set; }
 }
