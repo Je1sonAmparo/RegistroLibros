@@ -32,6 +32,13 @@ public class LibrosService(
             .AnyAsync(p => p.LibroId == libroId);
     }
 
+    public async Task<bool> ExisteTitulo(string titulo)
+    {
+        await using var contexto = await contextFactory.CreateDbContextAsync();
+        return await contexto.Libros
+            .AnyAsync(l => l.Titulo == titulo);
+    }
+
     private async Task<bool> Insertar(Libros libro)
     {
         await using var contexto = await contextFactory.CreateDbContextAsync();
