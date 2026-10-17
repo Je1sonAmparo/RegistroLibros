@@ -92,7 +92,7 @@
     {
         Libro.Titulo = Libro.Titulo?.Trim();
 
-        var tituloCambio = !string.Equals(Libro.Titulo, TituloOriginal, StringComparison.OrdinalIgnoreCase);
+        var tituloCambio = Libro.Titulo?.ToLower() != TituloOriginal?.ToLower();
         if (tituloCambio && await librosService.ExisteTitulo(Libro.Titulo!.ToLower()))
         {
             toastService.ShowError("Ya existe otro libro registrado con este título.");
