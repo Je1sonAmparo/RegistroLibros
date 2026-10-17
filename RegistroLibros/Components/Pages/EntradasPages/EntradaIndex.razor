@@ -63,7 +63,10 @@
         </div>
 
         <div class="card-footer d-flex justify-content-between align-center mb-4">
-            <label>Cantidad: @ListaEntradas.Count</label>
+            <label class="ms-3"><strong>Cantidad:</strong> @ListaEntradas.Count</label>
+            <div class="col-5 text-end">
+                <label><strong>Total:</strong> $@ListaEntradas.Sum(e => e.Total).ToString("N2")</label>
+            </div>
         </div>
     </div>
 </div>
