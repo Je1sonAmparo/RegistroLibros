@@ -40,7 +40,8 @@
                         <div class="col-md-5">
                             <label class="form-label"><strong>Libro</strong></label>
                             <InputSelect class="form-control form-select"
-                                         @bind-Value="DetalleSeleccionado.LibroId">
+                                         @bind-Value="DetalleSeleccionado.LibroId"
+                                         @bind-Value:after="AlCambiarLibro">
                                 <option value="0" disabled>Elija un libro</option>
                                 @foreach (var libro in ListaLibros)
                                 {
@@ -112,7 +113,8 @@
     public Entradas Entrada { get; set; } = new();
     public EntradasDetalle DetalleSeleccionado { get; set; } = new();
     public List<Libros> ListaLibros { get; set; } = [];
-    private int? detalleIdEnEdicion;
+    private int? libroIdInicial;
+    private bool aplicarLibroATodosLosDetalles;
 
     protected override async Task OnInitializedAsync()
     {
@@ -134,11 +136,10 @@
             Entrada.Total = Entrada.EntradasDetalle.Sum(detalle => detalle.Cantidad);
             if (Entrada.EntradasDetalle.Any())
             {
-                var detalle = Entrada.EntradasDetalle.First();
-                DetalleSeleccionado.LibroId = detalle.LibroId;
-                DetalleSeleccionado.Cantidad = detalle.Cantidad;
-                detalleIdEnEdicion = detalle.Id;
+                libroIdInicial = Entrada.EntradasDetalle.First().LibroId;
+                DetalleSeleccionado.LibroId = libroIdInicial.Value;
             }
+            DetalleSeleccionado.Cantidad = 0;
         });
         entradaResult.OnFailure(() =>
         {
@@ -171,7 +172,7 @@
         });
 
         ActualizarTotal();
-        detalleIdEnEdicion = null;
+        aplicarLibroATodosLosDetalles = false;
         DetalleSeleccionado = new EntradasDetalle
         {
             LibroId = libroSeleccionado.LibroId,
@@ -180,13 +181,16 @@
         await Task.CompletedTask;
     }
 
+    private void AlCambiarLibro()
+    {
+        aplicarLibroATodosLosDetalles =
+            libroIdInicial.HasValue &&
+            DetalleSeleccionado.LibroId != libroIdInicial.Value;
+    }
+
     private void RemoverDetalle(EntradasDetalle detalle)
     {
         Entrada.EntradasDetalle.Remove(detalle);
-        if (detalle.Id == detalleIdEnEdicion)
-        {
-            detalleIdEnEdicion = null;
-        }
         ActualizarTotal();
     }
 
@@ -203,20 +207,18 @@
             return;
         }
 
-        var detalleEnEdicion = Entrada.EntradasDetalle.FirstOrDefault(
-            detalle => detalle.Id == detalleIdEnEdicion);
-        if (detalleEnEdicion != null &&
-            (detalleEnEdicion.LibroId != DetalleSeleccionado.LibroId ||
-             detalleEnEdicion.Cantidad != DetalleSeleccionado.Cantidad))
+        if (aplicarLibroATodosLosDetalles)
         {
-            if (DetalleSeleccionado.Cantidad <= 0)
+            if (!ListaLibros.Any(libro => libro.LibroId == DetalleSeleccionado.LibroId))
             {
-                toastService.ShowError("La cantidad debe ser mayor que cero.");
+                toastService.ShowError("Seleccione un libro válido.");
                 return;
             }
 
-            detalleEnEdicion.LibroId = DetalleSeleccionado.LibroId;
-            detalleEnEdicion.Cantidad = DetalleSeleccionado.Cantidad;
+            foreach (var detalle in Entrada.EntradasDetalle)
+            {
+                detalle.LibroId = DetalleSeleccionado.LibroId;
+            }
         }
 
         Entrada.Concepto = Entrada.Concepto?.Trim();
