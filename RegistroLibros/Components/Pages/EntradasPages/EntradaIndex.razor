@@ -30,7 +30,7 @@
                     <InputSelect class="form-select" @bind-Value="Filtro">
                         <option value="" selected disabled>Elija una opci&oacute;n</option>
                         <option value="Fecha">Fecha</option>
-                        <option value="Total">Total</option>
+                        <option value="Total">Cantidad total</option>
                     </InputSelect>
                 </div>
                 <div class="col-4">
@@ -57,7 +57,7 @@
                     <PropertyColumn Property="@(e => e.EntradaId)" Title="EntradaId" Sortable="true" />
                     <PropertyColumn Property="@(e => e.Fecha)" Title="Fecha" Format="dd/MM/yyyy" Sortable="true" />
                     <PropertyColumn Property="@(e => e.Concepto)" Title="Concepto" Sortable="true" />
-                    <PropertyColumn Property="@(e => e.Total)" Title="Total" Format="C2" Sortable="true" />
+                    <PropertyColumn Property="@(e => e.Total)" Title="Cantidad total" Format="N0" Sortable="true" />
                 </QuickGrid>
             </div>
         </div>
@@ -65,7 +65,7 @@
         <div class="card-footer d-flex justify-content-between align-center mb-4">
             <label class="ms-3"><strong>Cantidad:</strong> @ListaEntradas.Count</label>
             <div class="col-5 text-end pe-4">
-                <label><strong>Total:</strong> $@ListaEntradas.Sum(e => e.Total).ToString("N2")</label>
+                <label><strong>Total de libros:</strong> @ListaEntradas.Sum(e => e.Total).ToString("N0")</label>
             </div>
         </div>
     </div>

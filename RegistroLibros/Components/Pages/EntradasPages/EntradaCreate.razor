@@ -1,0 +1,185 @@
+@page "/Entrada/Create"
+
+@inject EntradasService entradasService
+@inject LibrosService librosService
+@inject NavigationManager navigationManager
+@inject ToastService toastService
+
+<PageTitle>Crear Entrada</PageTitle>
+<EditForm Model="Entrada" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header text-center">
+                <h5 class="card-title">Crear Entrada</h5>
+            </div>
+
+            <div class="card-body">
+                <div class="row g-3">
+                    @* Fecha *@
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label"><strong>Fecha</strong></label>
+                        <InputDate class="form-control" @bind-Value="Entrada.Fecha"></InputDate>
+                        <ValidationMessage For="(() => Entrada.Fecha)" />
+                    </div>
+
+                    @* Concepto *@
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label"><strong>Concepto</strong></label>
+                        <InputText class="form-control" @bind-Value="Entrada.Concepto" />
+                        <ValidationMessage For="(() => Entrada.Concepto)" />
+                    </div>
+                </div>
+
+                @* Detalles de la Entrada *@
+                <div class="border border-success p-3 mt-3">
+                    <h5>Detalles de la Entrada</h5>
+
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-5">
+                            <label class="form-label"><strong>Libro</strong></label>
+                            <InputSelect class="form-control form-select"
+                                         @bind-Value="DetalleSeleccionado.LibroId"
+                                         @bind-Value:after="AlCambiarLibro">
+                                <option value="0" selected disabled>Elija un libro</option>
+                                @foreach (var libro in ListaLibros)
+                                {
+                                    <option value="@libro.LibroId">@libro.Titulo</option>
+                                }
+                            </InputSelect>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label"><strong>Cantidad</strong></label>
+                            <InputNumber class="form-control" @bind-Value="DetalleSeleccionado.Cantidad" />
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-outline-success w-100" @onclick="AgregarDetalle">
+                                <span class="bi bi-plus-lg"></span> Agregar
+                            </button>
+                        </div>
+                    </div>
+                    <hr />
+                    <table class="table table-light">
+                        <thead class="table table-striped">
+                            <tr class="Text-center">
+                                <th>Libro</th>
+                                <th>Cantidad</th>
+                                <th>Remover</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var detalle in Entrada.EntradasDetalle)
+                            {
+                                <tr>
+                                    <td>@ListaLibros.FirstOrDefault(libro => libro.LibroId == detalle.LibroId)?.Titulo</td>
+                                    <td>@detalle.Cantidad</td>
+                                    <td>
+                                        <button type="button" class="btn btn-outline-danger bi bi-trash"
+                                                @onclick="() => RemoverDetalle(detalle)"></button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                @* Total *@
+                <div class="row">
+                    <div class="col-6 offset-6">
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Total de libros</strong></label>
+                            <label class="form-control text-end"><strong>@Entrada.Total.ToString("N0")</strong></label>
+                            <ValidationMessage For="(() => Entrada.Total)" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @* Footer *@
+            <div class="card-footer text-center mt-2">
+                <a href="/Entrada/Index" class="btn btn-secondary"> <span class="bi bi-arrow-left"></span> Volver</a>
+                <button type="submit" class="btn btn-primary bi bi-floppy"> Guardar</button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    public Entradas Entrada { get; set; } = new();
+    public EntradasDetalle DetalleSeleccionado { get; set; } = new() { Cantidad = 1 };
+    public List<Libros> ListaLibros { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var librosResult = await librosService.GetList(libro => true);
+        librosResult.OnSuccess(libros => ListaLibros = libros);
+        librosResult.OnFailure(() => toastService.ShowError("No se pudieron consultar los libros."));
+    }
+
+    private void AgregarDetalle()
+    {
+        var libroSeleccionado = ListaLibros.FirstOrDefault(libro => libro.LibroId == DetalleSeleccionado.LibroId);
+        if (libroSeleccionado is null)
+        {
+            toastService.ShowError("Seleccione un libro.");
+            return;
+        }
+
+        if (DetalleSeleccionado.Cantidad <= 0)
+        {
+            toastService.ShowError("La cantidad debe ser mayor que cero.");
+            return;
+        }
+
+        Entrada.EntradasDetalle.Add(new EntradasDetalle
+        {
+            LibroId = libroSeleccionado.LibroId,
+            Cantidad = DetalleSeleccionado.Cantidad
+        });
+
+        ActualizarTotal();
+        DetalleSeleccionado.Cantidad = 1;
+    }
+
+    private void AlCambiarLibro()
+    {
+        if (Entrada.EntradasDetalle.Any(detalle => detalle.LibroId != DetalleSeleccionado.LibroId))
+        {
+            Entrada.EntradasDetalle.Clear();
+            ActualizarTotal();
+            DetalleSeleccionado.Cantidad = 1;
+        }
+    }
+
+    private void RemoverDetalle(EntradasDetalle detalle)
+    {
+        Entrada.EntradasDetalle.Remove(detalle);
+        ActualizarTotal();
+    }
+
+    private void ActualizarTotal()
+    {
+        Entrada.Total = Entrada.EntradasDetalle.Sum(detalle => detalle.Cantidad);
+    }
+
+    public async Task Guardar()
+    {
+        if (Entrada.EntradasDetalle.Count == 0)
+        {
+            toastService.ShowError("Agregue al menos un libro a la entrada.");
+            return;
+        }
+
+        Entrada.Concepto = Entrada.Concepto?.Trim();
+        ActualizarTotal();
+
+        var creadoResult = await entradasService.Guardar(Entrada);
+        creadoResult.OnSuccess(() =>
+        {
+            toastService.ShowSuccess("Entrada guardada correctamente.");
+            navigationManager.NavigateTo("/Entrada/Index");
+        });
+        creadoResult.OnFailure(() => toastService.ShowError("No se pudo guardar la entrada."));
+    }
+}
