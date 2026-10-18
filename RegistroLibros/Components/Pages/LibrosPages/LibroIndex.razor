@@ -48,6 +48,7 @@
                     <PropertyColumn Property="@(l => l.Titulo)" Title="Título" Sortable="true" />
                     <PropertyColumn Property="@(l => l.Autor)" Title="Autor" Sortable="true" />
                     <PropertyColumn Property="@(l => l.AnoPublicacion)" Title="Año de Publicación" Sortable="true" />
+                    <PropertyColumn Property="@(l => l.CantidadDisponible)" Title="Cantidad disponible" Sortable="true" />
                     <TemplateColumn Title="Promedio de días prestado">
                         @ObtenerPromedioDiasPrestado(context.LibroId).ToString("N2")
                     </TemplateColumn>
