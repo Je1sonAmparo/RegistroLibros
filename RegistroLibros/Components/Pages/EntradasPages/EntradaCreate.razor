@@ -107,7 +107,7 @@
 
 @code {
     public Entradas Entrada { get; set; } = new();
-    public EntradasDetalle DetalleSeleccionado { get; set; } = new() { Cantidad = 1 };
+    public EntradasDetalle DetalleSeleccionado { get; set; } = new();
     public List<Libros> ListaLibros { get; set; } = [];
 
     protected override async Task OnInitializedAsync()
@@ -117,10 +117,10 @@
         librosResult.OnFailure(() => toastService.ShowError("No se pudieron consultar los libros."));
     }
 
-    private void AgregarDetalle()
+    private async Task AgregarDetalle()
     {
         var libroSeleccionado = ListaLibros.FirstOrDefault(libro => libro.LibroId == DetalleSeleccionado.LibroId);
-        if (libroSeleccionado is null)
+        if (libroSeleccionado == null)
         {
             toastService.ShowError("Seleccione un libro.");
             return;
@@ -132,14 +132,23 @@
             return;
         }
 
-        Entrada.EntradasDetalle.Add(new EntradasDetalle
+        var yaExiste = Entrada.EntradasDetalle.Any(
+            detalle => detalle.LibroId == DetalleSeleccionado.LibroId);
+        if (yaExiste)
+        {
+            return;
+        }
+
+        var detalle = new EntradasDetalle
         {
             LibroId = libroSeleccionado.LibroId,
             Cantidad = DetalleSeleccionado.Cantidad
-        });
+        };
+        Entrada.EntradasDetalle.Add(detalle);
 
-        ActualizarTotal();
-        DetalleSeleccionado.Cantidad = 1;
+        Entrada.Total = Entrada.EntradasDetalle.Sum(d => d.Cantidad);
+        DetalleSeleccionado = new EntradasDetalle();
+        await Task.CompletedTask;
     }
 
     private void AlCambiarLibro()
@@ -148,7 +157,7 @@
         {
             Entrada.EntradasDetalle.Clear();
             ActualizarTotal();
-            DetalleSeleccionado.Cantidad = 1;
+            DetalleSeleccionado.Cantidad = 0;
         }
     }
 

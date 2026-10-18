@@ -33,7 +33,26 @@ public class EntradasService(
     {
         await using var contexto = await contextFactory.CreateDbContextAsync();
         contexto.Entradas.Add(entrada);
+        await AfectarLibros(entrada.EntradasDetalle.ToArray(), TipoOperacion.Suma);
         return await contexto.SaveChangesAsync() > 0;
+    }
+
+    private async Task AfectarLibros(
+        EntradasDetalle[] detalles,
+        TipoOperacion tipoOperacion)
+    {
+        await using var contexto = await contextFactory.CreateDbContextAsync();
+        foreach (var detalle in detalles)
+        {
+            var libro = await contexto.Libros
+                .SingleAsync(libro => libro.LibroId == detalle.LibroId);
+            if (tipoOperacion == TipoOperacion.Suma)
+                libro.CantidadDisponible += detalle.Cantidad;
+            else
+                libro.CantidadDisponible -= detalle.Cantidad;
+        }
+
+        await contexto.SaveChangesAsync();
     }
 
     private async Task<bool> Modificar(Entradas entrada)
@@ -66,9 +85,25 @@ public class EntradasService(
     public async Task<Result> Eliminar(int entradaId)
     {
         await using var contexto = await contextFactory.CreateDbContextAsync();
-        var eliminado = await contexto.Entradas
-            .Where(e => e.EntradaId == entradaId)
-            .ExecuteDeleteAsync() > 0;
+
+        var entrada = await contexto.Entradas
+            .Include(e => e.EntradasDetalle)
+            .FirstOrDefaultAsync(e => e.EntradaId == entradaId);
+        if (entrada == null)
+        {
+            return Result.Success(false);
+        }
+
+        await AfectarLibros(entrada.EntradasDetalle.ToArray(), TipoOperacion.Resta);
+        contexto.RemoveRange(entrada.EntradasDetalle);
+        contexto.Entradas.Remove(entrada);
+        var eliminado = await contexto.SaveChangesAsync() > 0;
         return Result.Success(eliminado);
+    }
+
+    private enum TipoOperacion
+    {
+        Suma,
+        Resta
     }
 }
