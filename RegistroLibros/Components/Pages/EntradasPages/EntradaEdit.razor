@@ -112,6 +112,7 @@
     public Entradas Entrada { get; set; } = new();
     public EntradasDetalle DetalleSeleccionado { get; set; } = new();
     public List<Libros> ListaLibros { get; set; } = [];
+    private int? detalleIdEnEdicion;
 
     protected override async Task OnInitializedAsync()
     {
@@ -133,7 +134,10 @@
             Entrada.Total = Entrada.EntradasDetalle.Sum(detalle => detalle.Cantidad);
             if (Entrada.EntradasDetalle.Any())
             {
-                DetalleSeleccionado.LibroId = Entrada.EntradasDetalle.First().LibroId;
+                var detalle = Entrada.EntradasDetalle.First();
+                DetalleSeleccionado.LibroId = detalle.LibroId;
+                DetalleSeleccionado.Cantidad = detalle.Cantidad;
+                detalleIdEnEdicion = detalle.Id;
             }
         });
         entradaResult.OnFailure(() =>
@@ -167,9 +171,11 @@
         });
 
         ActualizarTotal();
+        detalleIdEnEdicion = null;
         DetalleSeleccionado = new EntradasDetalle
         {
-            LibroId = libroSeleccionado.LibroId
+            LibroId = libroSeleccionado.LibroId,
+            Cantidad = 0
         };
         await Task.CompletedTask;
     }
@@ -177,6 +183,10 @@
     private void RemoverDetalle(EntradasDetalle detalle)
     {
         Entrada.EntradasDetalle.Remove(detalle);
+        if (detalle.Id == detalleIdEnEdicion)
+        {
+            detalleIdEnEdicion = null;
+        }
         ActualizarTotal();
     }
 
@@ -191,6 +201,22 @@
         {
             toastService.ShowError("Agregue al menos un libro a la entrada.");
             return;
+        }
+
+        var detalleEnEdicion = Entrada.EntradasDetalle.FirstOrDefault(
+            detalle => detalle.Id == detalleIdEnEdicion);
+        if (detalleEnEdicion != null &&
+            (detalleEnEdicion.LibroId != DetalleSeleccionado.LibroId ||
+             detalleEnEdicion.Cantidad != DetalleSeleccionado.Cantidad))
+        {
+            if (DetalleSeleccionado.Cantidad <= 0)
+            {
+                toastService.ShowError("La cantidad debe ser mayor que cero.");
+                return;
+            }
+
+            detalleEnEdicion.LibroId = DetalleSeleccionado.LibroId;
+            detalleEnEdicion.Cantidad = DetalleSeleccionado.Cantidad;
         }
 
         Entrada.Concepto = Entrada.Concepto?.Trim();

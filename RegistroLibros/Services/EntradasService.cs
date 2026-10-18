@@ -32,16 +32,27 @@ public class EntradasService(
     private async Task<bool> Insertar(Entradas entrada)
     {
         await using var contexto = await contextFactory.CreateDbContextAsync();
+
+        if (entrada.EntradasDetalle.Any(detalle => detalle.Cantidad <= 0))
+        {
+            return false;
+        }
+
         contexto.Entradas.Add(entrada);
-        await AfectarLibros(entrada.EntradasDetalle.ToArray(), TipoOperacion.Suma);
+
+        await AfectarLibros(
+            contexto,
+            entrada.EntradasDetalle.ToArray(),
+            TipoOperacion.Suma);
+
         return await contexto.SaveChangesAsync() > 0;
     }
 
     private async Task AfectarLibros(
+        Contexto contexto,
         EntradasDetalle[] detalles,
         TipoOperacion tipoOperacion)
     {
-        await using var contexto = await contextFactory.CreateDbContextAsync();
         foreach (var detalle in detalles)
         {
             var libro = await contexto.Libros
@@ -51,14 +62,49 @@ public class EntradasService(
             else
                 libro.CantidadDisponible -= detalle.Cantidad;
         }
-
-        await contexto.SaveChangesAsync();
     }
 
     private async Task<bool> Modificar(Entradas entrada)
     {
         await using var contexto = await contextFactory.CreateDbContextAsync();
-        contexto.Update(entrada);
+
+        if (entrada.EntradasDetalle.Any(detalle => detalle.Cantidad <= 0))
+        {
+            return false;
+        }
+
+        var entradaExistente = await contexto.Entradas
+            .Include(e => e.EntradasDetalle)
+            .SingleOrDefaultAsync(e => e.EntradaId == entrada.EntradaId);
+        if (entradaExistente == null)
+        {
+            return false;
+        }
+
+        await AfectarLibros(
+            contexto,
+            entradaExistente.EntradasDetalle.ToArray(),
+            TipoOperacion.Resta);
+        await AfectarLibros(
+            contexto,
+            entrada.EntradasDetalle.ToArray(),
+            TipoOperacion.Suma);
+
+        entradaExistente.Fecha = entrada.Fecha;
+        entradaExistente.Concepto = entrada.Concepto;
+        entradaExistente.Total = entrada.Total;
+
+        contexto.RemoveRange(entradaExistente.EntradasDetalle);
+        foreach (var detalle in entrada.EntradasDetalle)
+        {
+            entradaExistente.EntradasDetalle.Add(new EntradasDetalle
+            {
+                EntradaId = entradaExistente.EntradaId,
+                LibroId = detalle.LibroId,
+                Cantidad = detalle.Cantidad
+            });
+        }
+
         return await contexto.SaveChangesAsync() > 0;
     }
 
@@ -94,8 +140,10 @@ public class EntradasService(
             return Result.Success(false);
         }
 
-        await AfectarLibros(entrada.EntradasDetalle.ToArray(), TipoOperacion.Resta);
-        contexto.RemoveRange(entrada.EntradasDetalle);
+        await AfectarLibros(
+            contexto,
+            entrada.EntradasDetalle.ToArray(),
+            TipoOperacion.Resta);
         contexto.Entradas.Remove(entrada);
         var eliminado = await contexto.SaveChangesAsync() > 0;
         return Result.Success(eliminado);

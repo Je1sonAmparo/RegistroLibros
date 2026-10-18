@@ -132,13 +132,6 @@
             return;
         }
 
-        var yaExiste = Entrada.EntradasDetalle.Any(
-            detalle => detalle.LibroId == DetalleSeleccionado.LibroId);
-        if (yaExiste)
-        {
-            return;
-        }
-
         var detalle = new EntradasDetalle
         {
             LibroId = libroSeleccionado.LibroId,
@@ -147,7 +140,10 @@
         Entrada.EntradasDetalle.Add(detalle);
 
         Entrada.Total = Entrada.EntradasDetalle.Sum(d => d.Cantidad);
-        DetalleSeleccionado = new EntradasDetalle();
+        DetalleSeleccionado = new EntradasDetalle
+        {
+            LibroId = libroSeleccionado.LibroId
+        };
         await Task.CompletedTask;
     }
 
