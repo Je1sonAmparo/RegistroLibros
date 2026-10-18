@@ -53,7 +53,7 @@
                             <InputNumber class="form-control" @bind-Value="DetalleSeleccionado.Cantidad" />
                         </div>
                         <div class="col-md-2">
-                            <button type="button" class="btn btn-outline-success w-100" @onclick="AgregarDetalle">
+                            <button type="button" class="btn btn-outline-success w-100" @onclick="HandleLibroSelected">
                                 <span class="bi bi-plus-lg"></span> Agregar
                             </button>
                         </div>
@@ -131,6 +131,10 @@
 
             Entrada = entrada;
             Entrada.Total = Entrada.EntradasDetalle.Sum(detalle => detalle.Cantidad);
+            if (Entrada.EntradasDetalle.Any())
+            {
+                DetalleSeleccionado.LibroId = Entrada.EntradasDetalle.First().LibroId;
+            }
         });
         entradaResult.OnFailure(() =>
         {
@@ -139,7 +143,7 @@
         });
     }
 
-    private async Task AgregarDetalle()
+    private async Task HandleLibroSelected()
     {
         var libroSeleccionado = ListaLibros.FirstOrDefault(
             libro => libro.LibroId == DetalleSeleccionado.LibroId);
@@ -163,7 +167,10 @@
         });
 
         ActualizarTotal();
-        DetalleSeleccionado = new EntradasDetalle();
+        DetalleSeleccionado = new EntradasDetalle
+        {
+            LibroId = libroSeleccionado.LibroId
+        };
         await Task.CompletedTask;
     }
 

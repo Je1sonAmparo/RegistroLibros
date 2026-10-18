@@ -54,7 +54,7 @@
                             <InputNumber class="form-control" @bind-Value="DetalleSeleccionado.Cantidad" />
                         </div>
                         <div class="col-md-2">
-                            <button type="button" class="btn btn-outline-success w-100" @onclick="AgregarDetalle">
+                            <button type="button" class="btn btn-outline-success w-100" @onclick="HandleLibroSelected">
                                 <span class="bi bi-plus-lg"></span> Agregar
                             </button>
                         </div>
@@ -117,7 +117,7 @@
         librosResult.OnFailure(() => toastService.ShowError("No se pudieron consultar los libros."));
     }
 
-    private async Task AgregarDetalle()
+    private async Task HandleLibroSelected()
     {
         var libroSeleccionado = ListaLibros.FirstOrDefault(libro => libro.LibroId == DetalleSeleccionado.LibroId);
         if (libroSeleccionado == null)
