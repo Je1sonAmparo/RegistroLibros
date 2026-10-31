@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace RegistroLibros.Models;
+namespace RegistroLibros.Data.Models;
 
 public class Entradas
 {

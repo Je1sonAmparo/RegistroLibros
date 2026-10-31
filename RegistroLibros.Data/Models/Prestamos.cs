@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace RegistroLibros.Models;
+namespace RegistroLibros.Data.Models;
 
 public class Prestamos
 {

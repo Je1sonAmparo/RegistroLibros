@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace RegistroLibros.Migrations
+namespace RegistroLibros.Data.Migrations
 {
     /// <inheritdoc />
     public partial class MigracionIServiceResult : Migration
@@ -20,3 +20,4 @@ namespace RegistroLibros.Migrations
         }
     }
 }
+

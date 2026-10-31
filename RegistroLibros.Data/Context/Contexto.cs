@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using RegistroLibros.Models;
+using RegistroLibros.Data.Models;
 
-namespace RegistroLibros.Context;
+namespace RegistroLibros.Data.Context;
 
 public class Contexto : DbContext
 {

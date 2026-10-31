@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace RegistroLibros.Migrations
+namespace RegistroLibros.Data.Migrations
 {
     /// <inheritdoc />
     public partial class añadirdevolucion : Migration
@@ -38,3 +38,4 @@ namespace RegistroLibros.Migrations
         }
     }
 }
+

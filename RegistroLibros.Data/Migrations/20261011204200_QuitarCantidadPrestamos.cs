@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
-using RegistroLibros.Context;
+using RegistroLibros.Data.Context;
 
 #nullable disable
 
-namespace RegistroLibros.Migrations;
+namespace RegistroLibros.Data.Migrations;
 
 [DbContext(typeof(Contexto))]
 [Migration("20261011204200_QuitarCantidadPrestamos")]
@@ -27,3 +27,4 @@ public partial class QuitarCantidadPrestamos : Migration
             defaultValue: 0);
     }
 }
+

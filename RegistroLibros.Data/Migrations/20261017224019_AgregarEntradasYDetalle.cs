@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace RegistroLibros.Migrations
+namespace RegistroLibros.Data.Migrations
 {
     /// <inheritdoc />
     public partial class AgregarEntradasYDetalle : Migration
@@ -75,3 +75,4 @@ namespace RegistroLibros.Migrations
         }
     }
 }
+
