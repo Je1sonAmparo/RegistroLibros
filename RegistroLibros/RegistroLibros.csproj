@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RegistroLibros.Data\RegistroLibros.Data.csproj" />
+    <ProjectReference Include="..\RegistroLibros.Services\RegistroLibros.Services.csproj" />
   </ItemGroup>
 
 </Project>
