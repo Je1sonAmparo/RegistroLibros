@@ -1,7 +1,7 @@
-﻿using Aplicada1.Core;
+using Aplicada1.Core;
 using Microsoft.EntityFrameworkCore;
-using RegistroLibros.Context;
-using RegistroLibros.Models;
+using RegistroLibros.Data.Context;
+using RegistroLibros.Data.Models;
 using System.Linq.Expressions;
 
 namespace RegistroLibros.Services;
@@ -86,3 +86,4 @@ public class EstudiantesService(
         return Result.Success(eliminado);
     }
 }
+
