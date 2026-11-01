@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 using RegistroLibros.Data.Context;
 using RegistroLibros.Services;
 using Scalar.AspNetCore;
@@ -7,10 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-        options.JsonSerializerOptions.ReferenceHandler =
-            System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles);
+builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 var constr = builder.Configuration.GetConnectionString("SqlConStr");
 
 builder.Services.AddDbContextFactory<Contexto>(options =>
