@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using RegistroLibros.Components;
-using RegistroLibros.Data.Context;
+using RegistroLibros.Context;
 using RegistroLibros.Services;
 
 var builder = WebApplication.CreateBuilder(args);
