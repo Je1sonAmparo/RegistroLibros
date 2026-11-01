@@ -54,10 +54,7 @@ public class EstudiantesController(EstudiantesService estudiantesService) : Cont
             return BadRequest(resultado.Error);
         }
 
-        return CreatedAtAction(
-            nameof(GetById),
-            new { id = estudiante.EstudianteId },
-            estudiante.Adapt<EstudianteDto>());
+        return Ok(estudiante.Adapt<EstudianteDto>());
     }
 
     // PUT: api/Estudiantes/5
