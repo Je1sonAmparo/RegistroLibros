@@ -67,3 +67,38 @@ Content-Type: application/json
   "anoPublicacion": 2021,
   "cantidadDisponible": 6
 }
+
+### PRESTAMOS ###
+@prestamoId = 0
+
+###
+GET {{RegistroLibros.API_HostAddress}}/api/prestamos
+
+###
+POST {{RegistroLibros.API_HostAddress}}/api/prestamos
+Content-Type: application/json
+
+{
+  "estudianteId": 1,
+  "libroId": 1,
+  "fechaPrestamo": "2026-10-31T00:00:00",
+  "devuelto": false
+}
+
+###
+DELETE {{RegistroLibros.API_HostAddress}}/api/prestamos/{{prestamoId}}
+
+###
+GET {{RegistroLibros.API_HostAddress}}/api/prestamos/{{prestamoId}}
+
+###
+PUT {{RegistroLibros.API_HostAddress}}/api/prestamos/{{prestamoId}}
+Content-Type: application/json
+
+{
+  "prestamoId": {{prestamoId}},
+  "estudianteId": 1,
+  "libroId": 1,
+  "fechaPrestamo": "2026-10-31T00:00:00",
+  "devuelto": true
+}
