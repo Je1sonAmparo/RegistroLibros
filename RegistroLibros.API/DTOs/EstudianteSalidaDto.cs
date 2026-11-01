@@ -1,4 +1,4 @@
-namespace RegistroLibros.API.DTOs.Estudiantes;
+namespace RegistroLibros.API.DTOs;
 
 public class EstudianteSalidaDto
 {
