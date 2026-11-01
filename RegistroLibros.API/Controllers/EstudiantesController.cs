@@ -33,7 +33,7 @@ public class EstudiantesController(EstudiantesService estudiantesService) : Cont
             return BadRequest(estudianteResult.Error);
         }
 
-        if (estudianteResult.Value is null)
+        if (estudianteResult.Value == null)
         {
             return NotFound();
         }
@@ -71,7 +71,7 @@ public class EstudiantesController(EstudiantesService estudiantesService) : Cont
             return BadRequest(estudianteActual.Error);
         }
 
-        if (estudianteActual.Value is null)
+        if (estudianteActual.Value == null)
         {
             return NotFound();
         }
@@ -97,7 +97,7 @@ public class EstudiantesController(EstudiantesService estudiantesService) : Cont
             return BadRequest(estudiante.Error);
         }
 
-        if (estudiante.Value is null)
+        if (estudiante.Value == null)
         {
             return NotFound();
         }
@@ -109,7 +109,8 @@ public class EstudiantesController(EstudiantesService estudiantesService) : Cont
             return BadRequest(resultado.Error);
         }
 
-        if (resultado is Aplicada1.Core.Result<bool> eliminacion && !eliminacion.Value)
+        var eliminacion = (Aplicada1.Core.Result<bool>)resultado;
+        if (!eliminacion.Value)
         {
             return Conflict("No se puede eliminar el estudiante porque tiene préstamos asociados.");
         }
@@ -117,3 +118,4 @@ public class EstudiantesController(EstudiantesService estudiantesService) : Cont
         return NoContent();
     }
 }
+
