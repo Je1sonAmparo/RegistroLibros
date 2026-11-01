@@ -1,6 +1,34 @@
-@RegistroLibros.API_HostAddress = http://localhost:5097
+@RegistroLibros.API_HostAddress = https://localhost:7081
+@id = 0
 
-GET {{RegistroLibros.API_HostAddress}}/weatherforecast/
-Accept: application/json
+### 
+GET {{RegistroLibros.API_HostAddress}}/api/estudiantes
+
+### 
+POST {{RegistroLibros.API_HostAddress}}/api/estudiantes
+Content-Type: application/json
+
+{
+  "nombres": "Nombre de ejemplo",
+  "direccion": "Dirección de ejemplo",
+  "email": "ejemplo@correo.com",
+  "fechaNacimiento": "2000-01-01T00:00:00"
+}
+
+### E
+DELETE {{RegistroLibros.API_HostAddress}}/api/estudiantes/{{id}}
+
+### 
+GET {{RegistroLibros.API_HostAddress}}/api/estudiantes/{{id}}
 
 ###
+PUT {{RegistroLibros.API_HostAddress}}/api/estudiantes/{{id}}
+Content-Type: application/json
+
+{
+  "estudianteId": {{id}},
+  "nombres": "Nombre actualizado",
+  "direccion": "Dirección actualizada",
+  "email": "actualizado@correo.com",
+  "fechaNacimiento": "2000-01-01T00:00:00"
+}
