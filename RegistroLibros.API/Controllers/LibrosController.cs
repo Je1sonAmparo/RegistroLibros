@@ -1,4 +1,6 @@
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
+using RegistroLibros.API.DTOs;
 using RegistroLibros.Data.Models;
 using RegistroLibros.Services;
 
@@ -10,7 +12,7 @@ public class LibrosController(LibrosService librosService) : ControllerBase
 {
     // GET: api/Libros
     [HttpGet]
-    public async Task<ActionResult<List<Libros>>> Get()
+    public async Task<ActionResult<List<LibroDto>>> Get()
     {
         var librosResult = await librosService.GetList(l => true);
 
@@ -19,12 +21,12 @@ public class LibrosController(LibrosService librosService) : ControllerBase
             return BadRequest(librosResult.Error);
         }
 
-        return Ok(librosResult.Value);
+        return Ok(librosResult.Value.Adapt<List<LibroDto>>());
     }
 
     // GET: api/Libros/5
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<Libros>> Get(int id)
+    public async Task<ActionResult<LibroDto>> GetById(int id)
     {
         var libroResult = await librosService.Buscar(id);
 
@@ -38,12 +40,12 @@ public class LibrosController(LibrosService librosService) : ControllerBase
             return NotFound();
         }
 
-        return Ok(libroResult.Value);
+        return Ok(libroResult.Value.Adapt<LibroDto>());
     }
 
     // POST: api/Libros
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] Libros libro)
+    public async Task<ActionResult<LibroDto>> Post([FromBody] Libros libro)
     {
         var resultado = await librosService.Guardar(libro);
 
@@ -52,7 +54,10 @@ public class LibrosController(LibrosService librosService) : ControllerBase
             return BadRequest(resultado.Error);
         }
 
-        return Created();
+        return CreatedAtAction(
+            nameof(GetById),
+            new { id = libro.LibroId },
+            libro.Adapt<LibroDto>());
     }
 
     // PUT: api/Libros/5
