@@ -32,3 +32,38 @@ Content-Type: application/json
   "email": "actualizado@correo.com",
   "fechaNacimiento": "2000-01-01T00:00:00"
 }
+
+### LIBROS ###
+@libroId = 0
+
+###
+GET {{RegistroLibros.API_HostAddress}}/api/libros
+
+###
+POST {{RegistroLibros.API_HostAddress}}/api/libros
+Content-Type: application/json
+
+{
+  "titulo": "Título de ejemplo",
+  "autor": "Autor de ejemplo",
+  "anoPublicacion": 2020,
+  "cantidadDisponible": 5
+}
+
+###
+DELETE {{RegistroLibros.API_HostAddress}}/api/libros/{{libroId}}
+
+###
+GET {{RegistroLibros.API_HostAddress}}/api/libros/{{libroId}}
+
+###
+PUT {{RegistroLibros.API_HostAddress}}/api/libros/{{libroId}}
+Content-Type: application/json
+
+{
+  "libroId": {{libroId}},
+  "titulo": "Título actualizado",
+  "autor": "Autor actualizado",
+  "anoPublicacion": 2021,
+  "cantidadDisponible": 6
+}
