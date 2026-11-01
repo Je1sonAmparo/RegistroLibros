@@ -54,10 +54,7 @@ public class LibrosController(LibrosService librosService) : ControllerBase
             return BadRequest(resultado.Error);
         }
 
-        return CreatedAtAction(
-            nameof(GetById),
-            new { id = libro.LibroId },
-            libro.Adapt<LibroDto>());
+        return Ok(libro.Adapt<LibroDto>());
     }
 
     // PUT: api/Libros/5
