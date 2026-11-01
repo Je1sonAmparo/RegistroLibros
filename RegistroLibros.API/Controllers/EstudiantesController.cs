@@ -1,6 +1,6 @@
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
-using RegistroLibros.API.DTOs.Estudiantes;
+using RegistroLibros.API.DTOs;
 using RegistroLibros.Data.Models;
 using RegistroLibros.Services;
 
@@ -45,9 +45,8 @@ public class EstudiantesController(EstudiantesService estudiantesService) : Cont
 
     // POST: api/Estudiantes
     [HttpPost]
-    public async Task<ActionResult<EstudianteSalidaDto>> Post([FromBody] EstudianteEntradaDto estudianteDto)
+    public async Task<ActionResult<EstudianteSalidaDto>> Post([FromBody] Estudiantes estudiante)
     {
-        var estudiante = estudianteDto.Adapt<Estudiantes>();
         var resultado = await estudiantesService.Guardar(estudiante);
 
         if (resultado.IsFailure)
@@ -63,8 +62,13 @@ public class EstudiantesController(EstudiantesService estudiantesService) : Cont
 
     // PUT: api/Estudiantes/5
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Put(int id, [FromBody] EstudianteEntradaDto estudianteDto)
+    public async Task<IActionResult> Put(int id, [FromBody] Estudiantes estudiante)
     {
+        if (id != estudiante.EstudianteId)
+        {
+            return BadRequest();
+        }
+
         var estudianteActual = await estudiantesService.Buscar(id);
 
         if (estudianteActual.IsFailure)
@@ -77,7 +81,6 @@ public class EstudiantesController(EstudiantesService estudiantesService) : Cont
             return NotFound();
         }
 
-        var estudiante = estudianteDto.Adapt(estudianteActual.Value);
         var resultado = await estudiantesService.Guardar(estudiante);
 
         if (resultado.IsFailure)
