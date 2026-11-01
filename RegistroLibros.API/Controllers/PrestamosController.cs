@@ -54,10 +54,7 @@ public class PrestamosController(PrestamosService prestamosService) : Controller
             return BadRequest(resultado.Error);
         }
 
-        return CreatedAtAction(
-            nameof(GetById),
-            new { id = prestamo.PrestamoId },
-            prestamo.Adapt<PrestamoDto>());
+        return Ok(prestamo.Adapt<PrestamoDto>());
     }
 
     // PUT: api/Prestamos/5
