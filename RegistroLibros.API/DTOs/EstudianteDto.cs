@@ -1,6 +1,6 @@
 namespace RegistroLibros.API.DTOs;
 
-public class EstudianteSalidaDto
+public class EstudianteDto
 {
     public int EstudianteId { get; set; }
     public string? Nombres { get; set; }
