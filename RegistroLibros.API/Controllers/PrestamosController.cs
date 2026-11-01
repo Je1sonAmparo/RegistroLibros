@@ -1,4 +1,6 @@
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
+using RegistroLibros.API.DTOs;
 using RegistroLibros.Data.Models;
 using RegistroLibros.Services;
 
@@ -10,7 +12,7 @@ public class PrestamosController(PrestamosService prestamosService) : Controller
 {
     // GET: api/Prestamos
     [HttpGet]
-    public async Task<ActionResult<List<Prestamos>>> Get()
+    public async Task<ActionResult<List<PrestamoDto>>> Get()
     {
         var prestamosResult = await prestamosService.GetList(p => true);
 
@@ -19,12 +21,12 @@ public class PrestamosController(PrestamosService prestamosService) : Controller
             return BadRequest(prestamosResult.Error);
         }
 
-        return Ok(prestamosResult.Value);
+        return Ok(prestamosResult.Value.Adapt<List<PrestamoDto>>());
     }
 
     // GET: api/Prestamos/5
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<Prestamos>> Get(int id)
+    public async Task<ActionResult<PrestamoDto>> GetById(int id)
     {
         var prestamoResult = await prestamosService.Buscar(id);
 
@@ -38,12 +40,12 @@ public class PrestamosController(PrestamosService prestamosService) : Controller
             return NotFound();
         }
 
-        return Ok(prestamoResult.Value);
+        return Ok(prestamoResult.Value.Adapt<PrestamoDto>());
     }
 
     // POST: api/Prestamos
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] Prestamos prestamo)
+    public async Task<ActionResult<PrestamoDto>> Post([FromBody] Prestamos prestamo)
     {
         var resultado = await prestamosService.Guardar(prestamo);
 
@@ -52,7 +54,10 @@ public class PrestamosController(PrestamosService prestamosService) : Controller
             return BadRequest(resultado.Error);
         }
 
-        return Created();
+        return CreatedAtAction(
+            nameof(GetById),
+            new { id = prestamo.PrestamoId },
+            prestamo.Adapt<PrestamoDto>());
     }
 
     // PUT: api/Prestamos/5
