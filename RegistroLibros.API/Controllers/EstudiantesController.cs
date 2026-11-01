@@ -12,7 +12,7 @@ public class EstudiantesController(EstudiantesService estudiantesService) : Cont
 {
     // GET: api/Estudiantes
     [HttpGet]
-    public async Task<ActionResult<List<EstudianteSalidaDto>>> Get()
+    public async Task<ActionResult<List<EstudianteDto>>> Get()
     {
         var estudiantesResult = await estudiantesService.GetList(e => true);
 
@@ -21,12 +21,12 @@ public class EstudiantesController(EstudiantesService estudiantesService) : Cont
             return BadRequest(estudiantesResult.Error);
         }
 
-        return Ok(estudiantesResult.Value.Adapt<List<EstudianteSalidaDto>>());
+        return Ok(estudiantesResult.Value.Adapt<List<EstudianteDto>>());
     }
 
     // GET: api/Estudiantes/5
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<EstudianteSalidaDto>> GetById(int id)
+    public async Task<ActionResult<EstudianteDto>> GetById(int id)
     {
         var estudianteResult = await estudiantesService.Buscar(id);
 
@@ -40,12 +40,12 @@ public class EstudiantesController(EstudiantesService estudiantesService) : Cont
             return NotFound();
         }
 
-        return Ok(estudianteResult.Value.Adapt<EstudianteSalidaDto>());
+        return Ok(estudianteResult.Value.Adapt<EstudianteDto>());
     }
 
     // POST: api/Estudiantes
     [HttpPost]
-    public async Task<ActionResult<EstudianteSalidaDto>> Post([FromBody] Estudiantes estudiante)
+    public async Task<ActionResult<EstudianteDto>> Post([FromBody] Estudiantes estudiante)
     {
         var resultado = await estudiantesService.Guardar(estudiante);
 
@@ -57,7 +57,7 @@ public class EstudiantesController(EstudiantesService estudiantesService) : Cont
         return CreatedAtAction(
             nameof(GetById),
             new { id = estudiante.EstudianteId },
-            estudiante.Adapt<EstudianteSalidaDto>());
+            estudiante.Adapt<EstudianteDto>());
     }
 
     // PUT: api/Estudiantes/5
