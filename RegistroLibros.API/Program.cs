@@ -13,6 +13,7 @@ var constr = builder.Configuration.GetConnectionString("SqlConStr");
 builder.Services.AddDbContextFactory<Contexto>(options =>
     options.UseSqlServer(constr));
 builder.Services.AddTransient<EstudiantesService>();
+builder.Services.AddTransient<LibrosService>();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
