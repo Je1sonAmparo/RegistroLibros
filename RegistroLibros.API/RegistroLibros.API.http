@@ -1,0 +1,104 @@
+@RegistroLibros.API_HostAddress = https://localhost:7081
+@id = 5
+
+### 
+GET {{RegistroLibros.API_HostAddress}}/api/estudiantes
+
+### 
+POST {{RegistroLibros.API_HostAddress}}/api/estudiantes
+Content-Type: application/json
+
+{
+  "nombres": "Nombre de ejemplo",
+  "direccion": "Dirección de ejemplo",
+  "email": "ejemplo@correo.com",
+  "fechaNacimiento": "2000-01-01T00:00:00"
+}
+
+### E
+DELETE {{RegistroLibros.API_HostAddress}}/api/estudiantes/{{id}}
+
+### 
+GET {{RegistroLibros.API_HostAddress}}/api/estudiantes/{{id}}
+
+###
+PUT {{RegistroLibros.API_HostAddress}}/api/estudiantes/{{id}}
+Content-Type: application/json
+
+{
+  "estudianteId": {{id}},
+  "nombres": "Nombre actualizado",
+  "direccion": "Dirección actualizada",
+  "email": "actualizado@correo.com",
+  "fechaNacimiento": "2000-01-01T00:00:00"
+}
+
+### LIBROS ###
+@libroId = 0
+
+###
+GET {{RegistroLibros.API_HostAddress}}/api/libros
+
+###
+POST {{RegistroLibros.API_HostAddress}}/api/libros
+Content-Type: application/json
+
+{
+  "titulo": "Título de ejemplo",
+  "autor": "Autor de ejemplo",
+  "anoPublicacion": 2020,
+  "cantidadDisponible": 5
+}
+
+###
+DELETE {{RegistroLibros.API_HostAddress}}/api/libros/{{libroId}}
+
+###
+GET {{RegistroLibros.API_HostAddress}}/api/libros/{{libroId}}
+
+###
+PUT {{RegistroLibros.API_HostAddress}}/api/libros/{{libroId}}
+Content-Type: application/json
+
+{
+  "libroId": {{libroId}},
+  "titulo": "Título actualizado",
+  "autor": "Autor actualizado",
+  "anoPublicacion": 2021,
+  "cantidadDisponible": 6
+}
+
+### PRESTAMOS ###
+@prestamoId = 0
+
+###
+GET {{RegistroLibros.API_HostAddress}}/api/prestamos
+
+###
+POST {{RegistroLibros.API_HostAddress}}/api/prestamos
+Content-Type: application/json
+
+{
+  "estudianteId": 1,
+  "libroId": 1,
+  "fechaPrestamo": "2026-10-31T00:00:00",
+  "devuelto": false
+}
+
+###
+DELETE {{RegistroLibros.API_HostAddress}}/api/prestamos/{{prestamoId}}
+
+###
+GET {{RegistroLibros.API_HostAddress}}/api/prestamos/{{prestamoId}}
+
+###
+PUT {{RegistroLibros.API_HostAddress}}/api/prestamos/{{prestamoId}}
+Content-Type: application/json
+
+{
+  "prestamoId": {{prestamoId}},
+  "estudianteId": 1,
+  "libroId": 1,
+  "fechaPrestamo": "2026-10-31T00:00:00",
+  "devuelto": true
+}
